@@ -33,7 +33,7 @@ void init_globals(void)
     globals.game_state.screen_step = 8;
     globals.game_state.screen_w = al_get_display_width(display);
     globals.game_state.screen_h = al_get_display_height(display);
-    globals.game_state.side_menu_w = 200;
+    globals.game_state.side_menu_w = 182;
 }
 
 void init_tiles(int w, int h)
@@ -80,20 +80,6 @@ void keyboard_actions(void)
             globals.game_state.zoom++;
         }
 
-        switch(globals.game_state.zoom){
-            case 0:
-                globals.tiles.tile_size = 32;
-                break;
-            case 1:
-                globals.tiles.tile_size = 64;
-                break;
-            case 2:
-                globals.tiles.tile_size = 128;
-                break;
-            default:
-                globals.tiles.tile_size = 32;
-                break;
-        }
         globals.keys.key_z = false;
     }
 
@@ -134,12 +120,46 @@ void mouse_actions(void)
         //vertical movement
         globals.game_state.screen_center.y -= globals.mouse.dy;
     }
+    
+    //zoom control with mouse wheel
+    if (globals.mouse.dz > 0){
+        if (globals.game_state.zoom == 2){
+            globals.game_state.zoom = 2;
+        } else {
+            globals.game_state.zoom++;
+        }
+    } else if (globals.mouse.dz < 0){
+        if (globals.game_state.zoom == 0){
+            globals.game_state.zoom = 0;
+        } else {
+            globals.game_state.zoom--;
+        }       
+    }
+}
+
+void set_zoom_level(void)
+{
+    switch(globals.game_state.zoom){
+        case 0:
+            globals.tiles.tile_size = 32;
+            break;
+        case 1:
+            globals.tiles.tile_size = 64;
+            break;
+        case 2:
+            globals.tiles.tile_size = 128;
+            break;
+        default:
+            globals.tiles.tile_size = 32;
+            break;
+    }    
 }
 
 void mouse_clear_diff(void)
 {
     globals.mouse.dx = 0;
     globals.mouse.dy = 0;
+    globals.mouse.dz = 0;
 }
 
 void bound_screen(void)
@@ -165,5 +185,6 @@ void update_logic(void)
     mouse_actions();
     bound_screen();
 
+    set_zoom_level();
     mouse_clear_diff();
 }

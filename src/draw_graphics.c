@@ -52,33 +52,37 @@ void draw_map(void)
     int tile_type;
     float x,y;
 
+    int tile_size;
+    
     float offset = 0.5; //define pixels in the center of a pixel area
     ALLEGRO_COLOR grid_color = al_map_rgb(0, 0, 0);  //black
 
+    tile_size = globals.tiles.tile_size;
+    
     for (h = 0; h < globals.tiles.tile_h; h++){
         for (w = 0; w < globals.tiles.tile_w; w++){
             //add check to only raw the visible tiles instead of the whole map!!
-            x = globals.game_state.screen_w/2 - globals.game_state.screen_center.x + w * 64;
-            y = globals.game_state.screen_h/2 - globals.game_state.screen_center.y + h * 64;
+            x = globals.game_state.screen_w/2 - globals.game_state.screen_center.x + w * tile_size;
+            y = globals.game_state.screen_h/2 - globals.game_state.screen_center.y + h * tile_size;
             tile_type = globals.tiles.p[h*globals.tiles.tile_w+w];
             if (tile_type == TILE_BLANK){
-                al_draw_bitmap_region(globals.tiles.tile[TILE_BLANK], 0, 0, 64, 64, x , y , 0x0);
+                al_draw_scaled_bitmap(globals.tiles.tile[TILE_BLANK], 0, 0, 64, 64, x , y , tile_size, tile_size,  0x0);
             }
             if (tile_type == TILE_LAND){
-                al_draw_bitmap_region(globals.tiles.tile[TILE_LAND], 0, 0, 64, 64, x , y , 0x0);
+                al_draw_scaled_bitmap(globals.tiles.tile[TILE_LAND], 0, 0, 64, 64, x , y , tile_size, tile_size, 0x0);
             }
             if (tile_type == TILE_HILL){
-                al_draw_bitmap_region(globals.tiles.tile[TILE_HILL], 0, 0, 64, 64, x , y , 0x0);
+                al_draw_scaled_bitmap(globals.tiles.tile[TILE_HILL], 0, 0, 64, 64, x , y , tile_size, tile_size, 0x0);
             }
             if (tile_type == TILE_WATER){
-                al_draw_bitmap_region(globals.tiles.tile[TILE_WATER], 0, 0, 64, 64, x , y , 0x0);
+                al_draw_scaled_bitmap(globals.tiles.tile[TILE_WATER], 0, 0, 64, 64, x , y , tile_size, tile_size, 0x0);
             }
             if (tile_type == TILE_GRASS){
-                al_draw_bitmap_region(globals.tiles.tile[TILE_GRASS], 0, 0, 64, 64, x , y , 0x0);
+                al_draw_scaled_bitmap(globals.tiles.tile[TILE_GRASS], 0, 0, 64, 64, x , y , tile_size, tile_size, 0x0);
             }
             //draw grid around the tile if enabled
             if (globals.game_state.grid_en == true){
-                al_draw_rectangle(x + offset,y + offset, x + 63 + offset,y + 63 + offset, grid_color, 1);
+                al_draw_rectangle(x + offset,y + offset, x + tile_size-1 + offset,y + tile_size-1 + offset, grid_color, 1);
             }
         }
     }
@@ -92,6 +96,9 @@ void draw_cursor_rect(void)
     float x,y;
     float mouse_x,mouse_y;
 
+    int tile_size;
+    tile_size = globals.tiles.tile_size;
+    
     if (globals.mouse.x > globals.game_state.screen_w){
         mouse_x = globals.game_state.screen_w;
     } else {
@@ -106,23 +113,23 @@ void draw_cursor_rect(void)
     x = globals.game_state.screen_center.x - globals.game_state.screen_w/2 + mouse_x;
     if (x < 0){
         x = 0;
-    } else if (x >= globals.tiles.tile_w * 64){
-        x = (globals.tiles.tile_w-1) * 64;
+    } else if (x >= globals.tiles.tile_w * tile_size){
+        x = (globals.tiles.tile_w-1) * tile_size;
     } else {
-        x = (int)(x/64)*64;
+        x = (int)(x/tile_size)*tile_size;
     }
     x = x - (globals.game_state.screen_center.x - globals.game_state.screen_w/2);
     y = globals.game_state.screen_center.y - globals.game_state.screen_h/2 + mouse_y;
     if (y < 0){
         y = 0;
-    } else if (y >= globals.tiles.tile_h * 64){
-        y = (globals.tiles.tile_h-1) * 64;
+    } else if (y >= globals.tiles.tile_h * tile_size){
+        y = (globals.tiles.tile_h-1) * tile_size;
     } else {
-        y = (int)(y/64)*64;
+        y = (int)(y/tile_size)*tile_size;
     }
     y = y - (globals.game_state.screen_center.y - globals.game_state.screen_h/2);
 
-    al_draw_rectangle(x + offset,y + offset, x + 63 + offset,y + 63 + offset, cursor_color, 2);
+    al_draw_rectangle(x + offset,y + offset, x + tile_size-1 + offset,y + tile_size-1 + offset, cursor_color, 2);
 }
 
 void draw_build_menu(void)
@@ -152,7 +159,7 @@ void draw_build_menu(void)
         }
         if (globals.game_state.house0_en == true){
             ALLEGRO_COLOR house0_color    = al_map_rgb(154,205,50); //yellow green
-            al_draw_filled_rectangle(x0+117, y0+19, x0+117+63, y0+19+63, house0_color);
+            al_draw_filled_rectangle(x0+100, y0+19, x0+100+63, y0+19+63, house0_color);
         }
     }
 }

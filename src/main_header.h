@@ -57,6 +57,7 @@ struct mouse_t{
     int y;
     int dx;
     int dy;
+    int dz;
 };
 
 struct tiles_t {

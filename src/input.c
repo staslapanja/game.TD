@@ -57,6 +57,7 @@ void get_mouse_move(void)
 
     globals.mouse.dx += event.mouse.dx;
     globals.mouse.dy += event.mouse.dy;
+    globals.mouse.dz += event.mouse.dz;
 
 }
 
