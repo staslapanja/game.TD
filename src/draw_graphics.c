@@ -26,6 +26,10 @@ void create_tiles(void)
     globals.tiles.tile[TILE_GRASS] = al_create_bitmap(64, 64);
     al_set_target_bitmap(globals.tiles.tile[TILE_GRASS]);
     al_clear_to_color(al_map_rgba(50, 205, 50, 255));
+    //TILE_ENEMY
+    globals.tiles.tile[TILE_ENEMY] = al_create_bitmap(64, 64);
+    al_set_target_bitmap(globals.tiles.tile[TILE_ENEMY]);
+    al_clear_to_color(al_map_rgba(127, 0, 127, 255));
 
     //reselect the display buffer
     al_set_target_backbuffer(display);
@@ -36,6 +40,7 @@ void update_graphics(void)
     draw_background();
     draw_map();
     draw_cursor_rect();
+    draw_enemy();
     draw_build_menu();
 }
 
@@ -53,12 +58,12 @@ void draw_map(void)
     float x,y;
 
     int tile_size;
-    
+
     float offset = 0.5; //define pixels in the center of a pixel area
     ALLEGRO_COLOR grid_color = al_map_rgb(0, 0, 0);  //black
 
     tile_size = globals.tiles.tile_size;
-    
+
     for (h = 0; h < globals.tiles.tile_h; h++){
         for (w = 0; w < globals.tiles.tile_w; w++){
             //add check to only raw the visible tiles instead of the whole map!!
@@ -98,7 +103,7 @@ void draw_cursor_rect(void)
 
     int tile_size;
     tile_size = globals.tiles.tile_size;
-    
+
     if (globals.mouse.x > globals.game_state.screen_w){
         mouse_x = globals.game_state.screen_w;
     } else {
@@ -160,6 +165,21 @@ void draw_build_menu(void)
         if (globals.game_state.house0_en == true){
             ALLEGRO_COLOR house0_color    = al_map_rgb(154,205,50); //yellow green
             al_draw_filled_rectangle(x0+100, y0+19, x0+100+63, y0+19+63, house0_color);
+        }
+    }
+}
+
+void draw_enemy(void)
+{
+    int tile_size;
+    struct enemy_t *cursor = globals.enemy;
+
+    tile_size = globals.tiles.tile_size;
+
+    if (cursor != NULL){
+        while(cursor->next != NULL){
+            al_draw_scaled_bitmap(globals.tiles.tile[TILE_ENEMY], 0, 0, 64, 64, cursor->position.x , cursor->position.y , tile_size, tile_size, 0x0);
+            cursor = cursor->next;
         }
     }
 }

@@ -1,6 +1,5 @@
 
 #include "game_logic.h"
-#include "main_header.h"
 
 void init_globals(void)
 {
@@ -34,6 +33,10 @@ void init_globals(void)
     globals.game_state.screen_w = al_get_display_width(display);
     globals.game_state.screen_h = al_get_display_height(display);
     globals.game_state.side_menu_w = 182;
+    //object pointers
+    globals.enemy = NULL;
+    globals.towers = NULL;
+    globals.buildings = NULL;
 }
 
 void init_tiles(int w, int h)
@@ -64,11 +67,27 @@ void create_map(void)
 
     for (h = 0; h < globals.tiles.tile_h; h++){
         for (w = 0; w < globals.tiles.tile_w; w++){
-            sel = rand()%(2)+1;
+            sel = ((rand()%3) > 0) ? TILE_LAND : TILE_HILL;
             globals.tiles.p[h*globals.tiles.tile_w + w] = sel;
         }
     }
 }
+
+void add_river(void)
+{
+    int h,w;
+
+    for (h = 0; h < globals.tiles.tile_h; h++){
+        for (w = 0; w < globals.tiles.tile_w; w++){
+            if (((w == 1) || (w == globals.tiles.tile_w - 2)) && (h < globals.tiles.tile_h - 1)){
+                globals.tiles.p[h*globals.tiles.tile_w + w] = TILE_WATER;
+            } else if ((w > 1) && (w < globals.tiles.tile_w - 2) && (h == globals.tiles.tile_h - 2)){
+                globals.tiles.p[h*globals.tiles.tile_w + w] = TILE_WATER;
+            }
+        }
+    }
+}
+
 
 void keyboard_actions(void)
 {
@@ -120,7 +139,7 @@ void mouse_actions(void)
         //vertical movement
         globals.game_state.screen_center.y -= globals.mouse.dy;
     }
-    
+
     //zoom control with mouse wheel
     if (globals.mouse.dz > 0){
         if (globals.game_state.zoom == 2){
@@ -133,7 +152,7 @@ void mouse_actions(void)
             globals.game_state.zoom = 0;
         } else {
             globals.game_state.zoom--;
-        }       
+        }
     }
 }
 
@@ -152,7 +171,7 @@ void set_zoom_level(void)
         default:
             globals.tiles.tile_size = 32;
             break;
-    }    
+    }
 }
 
 void mouse_clear_diff(void)
@@ -179,6 +198,22 @@ void bound_screen(void)
     }
 }
 
+void update_enemy(void)
+{
+    //create enemy if none
+    if (globals.enemy == NULL) {
+        struct enemy_t *temp = NULL;
+        temp = create_enemy(64, 0, 1, 100);
+        globals.enemy = append_ll_item(globals.enemy,temp);
+    }
+    //change position
+    struct enemy_t *cursor = globals.enemy;
+    while(cursor->next != NULL){
+        cursor->position.y += cursor->speed;
+        cursor = cursor->next;
+    }
+}
+
 void update_logic(void)
 {
     keyboard_actions();
@@ -187,4 +222,6 @@ void update_logic(void)
 
     set_zoom_level();
     mouse_clear_diff();
+
+    update_enemy();
 }

@@ -9,5 +9,6 @@ void draw_background(void);
 void draw_map(void);
 void draw_cursor_rect(void);
 void draw_build_menu(void);
+void draw_enemy(void);
 
 #endif

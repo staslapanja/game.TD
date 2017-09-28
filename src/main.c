@@ -60,6 +60,7 @@ void init(void)
     init_tiles(10,10);
 
     create_map();
+    add_river();
 
     move_screen(globals.tiles.map_center);
 }

@@ -5,13 +5,16 @@
 #include <allegro5/allegro5.h>
 #include <allegro5/allegro_primitives.h>
 
-#define TILE_NUM    5
+#define TILE_NUM    8
 
 #define TILE_BLANK  0
 #define TILE_LAND   1
 #define TILE_HILL   2
 #define TILE_WATER  3
 #define TILE_GRASS  4
+#define TILE_ENEMY  5
+#define TILE_TOWER  6
+#define TILE_BUILDING 7
 
 extern ALLEGRO_EVENT_QUEUE* event_queue;
 extern ALLEGRO_EVENT event;
@@ -69,11 +72,41 @@ struct tiles_t {
     struct xy_t map_center;
 };
 
+struct enemy_t{
+    struct xy_t position;
+    float speed;
+    float max_health;
+    float health;
+    struct enemy_t *prev;
+    struct enemy_t *next;
+};
+
+struct tower_t{
+    struct xy_t position;
+    float angle;
+    float damage;
+    bool fire_active;
+    int level;
+    struct tower_t *prev;
+    struct tower_t *next;
+};
+
+struct building_t{
+    struct xy_t position;
+    float gold_per_tick;
+    int level;
+    struct building_t *prev;
+    struct building_t *next;
+};
+
 struct globals_t {
     struct keys_t keys;
     struct mouse_t mouse;
     struct game_state_t game_state;
     struct tiles_t tiles;
+    struct enemy_t *enemy;
+    struct tower_t *towers;
+    struct building_t *buildings;
 };
 
 #endif
