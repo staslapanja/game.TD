@@ -28,6 +28,9 @@ void get_keyboard_input(void)
     if (event.keyboard.keycode == ALLEGRO_KEY_B) {
         globals.keys.key_b = true;
     }
+    if (event.keyboard.keycode == ALLEGRO_KEY_E) {
+        globals.keys.key_e = true;
+    }
 }
 
 void reset_keyboard_input(void)

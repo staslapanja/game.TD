@@ -56,6 +56,7 @@ void init(void)
 
     init_globals();
     create_tiles();
+    create_game_objects();
 
     init_tiles(10,10);
 
@@ -63,6 +64,11 @@ void init(void)
     add_river();
 
     move_screen(globals.tiles.map_center);
+    
+    //TEMP!!!
+    struct tower_t *temp = NULL;
+    temp = create_tower(64*2, 64*7, 0, 1, 1, 256);
+    globals.towers = t_append_ll_item(globals.towers,temp);
 }
 
 void shutdown(void)
@@ -75,6 +81,18 @@ void shutdown(void)
 
     if (event_queue)
         al_destroy_event_queue(event_queue);
+    
+    
+    //free all llist objects
+    //enemy
+    while(globals.enemy != NULL){
+        globals.enemy = remove_ll_item(globals.enemy,globals.enemy);
+    }
+    //towers
+    while(globals.towers != NULL){
+        globals.towers = t_remove_ll_item(globals.towers,globals.towers);
+    }
+    //buildings
 }
 
 void game_loop(void)

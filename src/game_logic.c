@@ -35,6 +35,8 @@ void init_globals(void)
     globals.game_state.side_menu_w = 182;
     //object pointers
     globals.enemy = NULL;
+    globals.enemy_num = 0;
+    globals.enemy_spawn = false;
     globals.towers = NULL;
     globals.buildings = NULL;
 }
@@ -128,6 +130,12 @@ void keyboard_actions(void)
             globals.game_state.screen_w = al_get_display_width(display);
         }
     }
+    
+    //spawn enemy
+    if (globals.keys.key_e == true){
+        globals.enemy_spawn = true;
+        globals.keys.key_e = false;
+    }
 }
 
 void mouse_actions(void)
@@ -200,18 +208,75 @@ void bound_screen(void)
 
 void update_enemy(void)
 {
-    //create enemy if none
-    if (globals.enemy == NULL) {
+    //create enemy if less than max
+    if (globals.enemy_spawn == true) {
         struct enemy_t *temp = NULL;
-        temp = create_enemy(64, 0, 1, 100);
+        temp = create_enemy(64, 0, 4, 100);
         globals.enemy = append_ll_item(globals.enemy,temp);
+        globals.enemy_num++;
+        globals.enemy_spawn = false;
     }
     //change position
     struct enemy_t *cursor = globals.enemy;
-    while(cursor->next != NULL){
-        cursor->position.y += cursor->speed;
-        cursor = cursor->next;
+    while(cursor != NULL){
+        update_enemy_path(cursor);
+        if(check_enemy_finish(cursor)){
+            struct enemy_t *temp = cursor;
+            cursor = cursor->next;
+            globals.enemy = remove_ll_item(globals.enemy,temp);
+            globals.enemy_num--;
+        } else {
+            cursor = cursor->next;
+        }
     }
+}
+
+void update_enemy_path(struct enemy_t *a)
+{
+    int virtual_tile_size = 64;
+    
+    if ((a->position.x == virtual_tile_size) && (a->position.y < (globals.tiles.tile_h-2) * virtual_tile_size)){
+        a->position.y += a->speed;
+    } else if ((a->position.x < (globals.tiles.tile_w-2) * virtual_tile_size) && (a->position.y >= (globals.tiles.tile_h-2) * virtual_tile_size)){
+        a->position.x += a->speed;
+        a->position.y = (globals.tiles.tile_h-2) * virtual_tile_size;
+    } else if (a->position.x >= (globals.tiles.tile_w-2) * virtual_tile_size){
+        a->position.x = (globals.tiles.tile_w-2) * virtual_tile_size;
+        a->position.y -= a->speed;
+    }
+}
+
+bool check_enemy_finish(struct enemy_t *a)
+{
+    int virtual_tile_size = 64;
+    if ((a->position.x >= (globals.tiles.tile_w-2) * virtual_tile_size) && (a->position.y <= 0)){
+            return true;
+    }
+    return false;
+}
+
+void update_towers(void)
+{
+    //seek nearest enemy in range
+    struct tower_t *t_cursor = globals.towers;
+    struct enemy_t *e_cursor;
+    float t_x,t_y,e_x,e_y;
+    
+    while(t_cursor != NULL){
+        t_x = t_cursor->position.x;
+        t_y = t_cursor->position.y;
+        //check all enemies
+        e_cursor = globals.enemy;
+        while(e_cursor != NULL){
+            e_x = e_cursor->position.x;
+            e_y = e_cursor->position.y;
+            if ((sqrt((e_x-t_x)*(e_x-t_x) + (e_y-t_y)*(e_y-t_y))) >= t_cursor->range){
+                t_cursor->target = e_cursor;
+            }
+            e_cursor = e_cursor->next;
+        }
+        t_cursor = t_cursor->next;
+    }    
 }
 
 void update_logic(void)
@@ -224,4 +289,5 @@ void update_logic(void)
     mouse_clear_diff();
 
     update_enemy();
+    update_towers();
 }

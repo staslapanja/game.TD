@@ -4,6 +4,8 @@
 
 #include <allegro5/allegro5.h>
 #include <allegro5/allegro_primitives.h>
+#include <stdio.h>
+#include <math.h>
 
 #define TILE_NUM    8
 
@@ -12,9 +14,13 @@
 #define TILE_HILL   2
 #define TILE_WATER  3
 #define TILE_GRASS  4
-#define TILE_ENEMY  5
-#define TILE_TOWER  6
-#define TILE_BUILDING 7
+
+#define OBJ_NUM         4
+
+#define OBJ_ENEMY       0
+#define OBJ_TOWER       1
+#define OBJ_TOWER_GUN   2
+#define OBJ_BUILDING    3
 
 extern ALLEGRO_EVENT_QUEUE* event_queue;
 extern ALLEGRO_EVENT event;
@@ -51,6 +57,7 @@ struct keys_t{
     bool key_z;
     bool key_g;
     bool key_b;
+    bool key_e;
 };
 
 struct mouse_t{
@@ -87,6 +94,8 @@ struct tower_t{
     float damage;
     bool fire_active;
     int level;
+    float range;
+    struct enemy_t *target;
     struct tower_t *prev;
     struct tower_t *next;
 };
@@ -105,8 +114,11 @@ struct globals_t {
     struct game_state_t game_state;
     struct tiles_t tiles;
     struct enemy_t *enemy;
+    int enemy_num;
+    bool enemy_spawn;
     struct tower_t *towers;
     struct building_t *buildings;
+    ALLEGRO_BITMAP *objects[OBJ_NUM];
 };
 
 #endif
