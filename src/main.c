@@ -64,10 +64,16 @@ void init(void)
     add_river();
 
     move_screen(globals.tiles.map_center);
-    
+
     //TEMP!!!
     struct tower_t *temp = NULL;
     temp = create_tower(64*2, 64*7, 0, 1, 1, 256);
+    globals.towers = t_append_ll_item(globals.towers,temp);
+    temp = create_tower(64*0, 64*7, 0, 1, 1, 256);
+    globals.towers = t_append_ll_item(globals.towers,temp);
+    temp = create_tower(64*5, 64*7, 0, 1, 1, 256);
+    globals.towers = t_append_ll_item(globals.towers,temp);
+    temp = create_tower(64*5, 64*9, 0, 1, 1, 256);
     globals.towers = t_append_ll_item(globals.towers,temp);
 }
 
@@ -81,8 +87,8 @@ void shutdown(void)
 
     if (event_queue)
         al_destroy_event_queue(event_queue);
-    
-    
+
+
     //free all llist objects
     //enemy
     while(globals.enemy != NULL){

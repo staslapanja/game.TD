@@ -27,7 +27,7 @@ void create_tiles(void)
     al_set_target_bitmap(globals.tiles.tile[TILE_GRASS]);
     al_clear_to_color(al_map_rgba(50, 205, 50, 255));
 
-    
+
     //reselect the display buffer
     al_set_target_backbuffer(display);
 }
@@ -46,10 +46,10 @@ void create_game_objects(void)
     globals.objects[OBJ_TOWER_GUN] = al_create_bitmap(64, 64);
     al_set_target_bitmap(globals.objects[OBJ_TOWER_GUN]);
     al_draw_filled_circle(32, 32, 16, al_map_rgba(176,196,222, 255));
-    al_draw_line(32, 32, 32, 0, al_map_rgb(0, 0, 0), 3);
-    
+    al_draw_line(32, 32, 32, 0, al_map_rgb(0, 0, 0), 5);
+
     //reselect the display buffer
-    al_set_target_backbuffer(display);    
+    al_set_target_backbuffer(display);
 }
 
 void update_graphics(void)
@@ -194,7 +194,7 @@ void draw_enemy(void)
     struct enemy_t *cursor = globals.enemy;
 
     tile_size = globals.tiles.tile_size;
-    
+
     while(cursor != NULL){
         //conver virtual position to resized position
         float mult;
@@ -229,7 +229,11 @@ void draw_health_bar(float x, float y, int len, float max, float value)
     al_draw_filled_rectangle(x, y, x+len, y+3, base_color);
     //line
     float ratio;
-    ratio = value/max*len;
+    if (value > 0) {
+        ratio = value/max*len;
+    } else {
+        ratio = 0;
+    }
     ALLEGRO_COLOR health_color    = al_map_rgb(255, 0, 0);
     al_draw_filled_rectangle(x, y, x+(int)ratio, y+3, health_color);
     //border
@@ -239,11 +243,11 @@ void draw_health_bar(float x, float y, int len, float max, float value)
 
 void draw_towers(void)
 {
-    float x,y;
+    float t_x,t_y,e_x,e_y;
     int tile_size;
     struct tower_t *cursor = globals.towers;
     tile_size = globals.tiles.tile_size;
-    
+
     while(cursor != NULL){
         //conver virtual position to resized position
         float mult;
@@ -261,13 +265,22 @@ void draw_towers(void)
                 mult = 1;
                 break;
         }
-        x = globals.game_state.screen_w/2 - globals.game_state.screen_center.x + (cursor->position.x * mult);
-        y = globals.game_state.screen_h/2 - globals.game_state.screen_center.y + (cursor->position.y * mult);
+        t_x = globals.game_state.screen_w/2 - globals.game_state.screen_center.x + (cursor->position.x * mult);
+        t_y = globals.game_state.screen_h/2 - globals.game_state.screen_center.y + (cursor->position.y * mult);
         //draw tower base
-        al_draw_scaled_bitmap(globals.objects[OBJ_TOWER], 0, 0, 64, 64, x , y , tile_size, tile_size, 0x0);
+        al_draw_scaled_bitmap(globals.objects[OBJ_TOWER], 0, 0, 64, 64, t_x , t_y , tile_size, tile_size, 0x0);
+        //draw beam
+        if (cursor->fire_active == true){
+            e_x = globals.game_state.screen_w/2 - globals.game_state.screen_center.x + (cursor->target->position.x * mult);
+            e_y = globals.game_state.screen_h/2 - globals.game_state.screen_center.y + (cursor->target->position.y * mult);
+            al_draw_line(t_x+32*mult, t_y+32*mult, e_x+32*mult, e_y+32*mult, al_map_rgb(255, 0, 0), 3);
+            al_draw_line(t_x+32*mult, t_y+32*mult, e_x+32*mult, e_y+32*mult, al_map_rgb(255, 255, 255), 1);
+            al_draw_filled_circle(e_x+32*mult, e_y+32*mult, rand()%12, al_map_rgba(255, 0, 0, rand()%255));
+            al_draw_filled_circle(e_x+32*mult, e_y+32*mult, rand()%8, al_map_rgba(255,255,255, rand()%255));
+        }
         //draw tower cannon
-        al_draw_scaled_rotated_bitmap(globals.objects[OBJ_TOWER_GUN], 0, 0, x, y, mult, mult, cursor->angle, 0x0);
-        
+        al_draw_scaled_rotated_bitmap(globals.objects[OBJ_TOWER_GUN], 32, 32, t_x+32*mult, t_y+32*mult, mult, mult, cursor->angle, 0x0);
+
         cursor = cursor->next;
     }
 }
