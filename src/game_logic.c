@@ -23,9 +23,13 @@ void init_globals(void)
     globals.game_state.grid_en = false;
     globals.game_state.build_menu_on = false;
     globals.game_state.tower0_en = true;
+    globals.game_state.tower0_place = false;
     globals.game_state.tower1_en = false;
-    globals.game_state.house0_en = true;
+    globals.game_state.tower1_place = false;
+    globals.game_state.house0_en = false;
+    globals.game_state.house0_place = false;
     globals.game_state.house1_en = false;
+    globals.game_state.house1_place = false;
     globals.game_state.zoom = 1;
     globals.game_state.screen_center.x = 0;
     globals.game_state.screen_center.y = 0;
@@ -162,6 +166,33 @@ void mouse_actions(void)
             globals.game_state.zoom--;
         }
     }
+
+    //menu actions
+    if (globals.game_state.build_menu_on == true){
+        float x0,y0;
+        int screen_w;
+        screen_w = al_get_display_width(display);
+        x0 = screen_w-globals.game_state.side_menu_w;
+        y0 = 0;
+
+        if ((globals.mouse.x >= x0+19) &&
+            (globals.mouse.x <= x0+19+63) &&
+            (globals.mouse.y >= y0+19) &&
+            (globals.mouse.y <= y0+19+63)){
+                if (globals.mouse.lb == true){
+                    globals.game_state.tower0_place = true;
+                }
+            }
+    }
+
+    //reset building actions with right click
+    if (globals.mouse.rb == true){
+        globals.game_state.tower0_place = false;
+        globals.game_state.tower1_place = false;
+        globals.game_state.house0_place = false;
+        globals.game_state.house1_place = false;
+    }
+
 }
 
 void set_zoom_level(void)
@@ -295,7 +326,7 @@ void update_towers(void)
             if ((sqrt(dx*dx + dy*dy)) <= t_cursor->range){
                 t_cursor->target = e_cursor;
                 t_cursor->fire_active = true;
-                //calculate like 0 is north
+                //calculate as if 0 is north
                 if (dy == 0){
                     t_cursor->angle = (dx/abs(dx)) * ALLEGRO_PI/2;
                 } else {

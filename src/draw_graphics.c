@@ -26,7 +26,26 @@ void create_tiles(void)
     globals.tiles.tile[TILE_GRASS] = al_create_bitmap(64, 64);
     al_set_target_bitmap(globals.tiles.tile[TILE_GRASS]);
     al_clear_to_color(al_map_rgba(50, 205, 50, 255));
-
+    //TILE_OK     5
+    globals.tiles.tile[TILE_OK] = al_create_bitmap(64, 64);
+    al_set_target_bitmap(globals.tiles.tile[TILE_OK]);
+    al_draw_line( 0,47, 16, 63, al_map_rgb(0, 255, 0), 2);
+    al_draw_line( 0,31, 32, 63, al_map_rgb(0, 255, 0), 2);
+    al_draw_line( 0,15, 48, 63, al_map_rgb(0, 255, 0), 2);
+    al_draw_line( 0, 0, 63, 63, al_map_rgb(0, 255, 0), 2);
+    al_draw_line(16, 0, 63, 47, al_map_rgb(0, 255, 0), 2);
+    al_draw_line(32, 0, 63, 31, al_map_rgb(0, 255, 0), 2);
+    al_draw_line(48, 0, 63, 15, al_map_rgb(0, 255, 0), 2);
+    //TILE_BAD    6
+    globals.tiles.tile[TILE_BAD] = al_create_bitmap(64, 64);
+    al_set_target_bitmap(globals.tiles.tile[TILE_BAD]);
+    al_draw_line( 0,15, 15, 0, al_map_rgb(255, 0, 0), 2);
+    al_draw_line( 0,31, 31, 0, al_map_rgb(255, 0, 0), 2);
+    al_draw_line( 0,47, 47, 0, al_map_rgb(255, 0, 0), 2);
+    al_draw_line( 0,63, 63, 0, al_map_rgb(255, 0, 0), 2);
+    al_draw_line(15,63, 63,15, al_map_rgb(255, 0, 0), 2);
+    al_draw_line(31,63, 63,31, al_map_rgb(255, 0, 0), 2);
+    al_draw_line(47,63, 63,47, al_map_rgb(255, 0, 0), 2);
 
     //reselect the display buffer
     al_set_target_backbuffer(display);
@@ -74,6 +93,7 @@ void draw_map(void)
     int w,h;
     int tile_type;
     float x,y;
+    bool place_tower, place_house;
 
     int tile_size;
 
@@ -81,6 +101,8 @@ void draw_map(void)
     ALLEGRO_COLOR grid_color = al_map_rgb(0, 0, 0);  //black
 
     tile_size = globals.tiles.tile_size;
+    place_tower = (globals.game_state.tower0_place == true) || (globals.game_state.tower1_place == true);
+    place_house = (globals.game_state.house0_place == true) || (globals.game_state.house1_place == true);
 
     for (h = 0; h < globals.tiles.tile_h; h++){
         for (w = 0; w < globals.tiles.tile_w; w++){
@@ -93,15 +115,30 @@ void draw_map(void)
             }
             if (tile_type == TILE_LAND){
                 al_draw_scaled_bitmap(globals.tiles.tile[TILE_LAND], 0, 0, 64, 64, x , y , tile_size, tile_size, 0x0);
+                if (place_tower || place_house){
+                    al_draw_scaled_bitmap(globals.tiles.tile[TILE_OK], 0, 0, 64, 64, x , y , tile_size, tile_size,  0x0);
+                }
             }
             if (tile_type == TILE_HILL){
                 al_draw_scaled_bitmap(globals.tiles.tile[TILE_HILL], 0, 0, 64, 64, x , y , tile_size, tile_size, 0x0);
+                if (place_tower){
+                    al_draw_scaled_bitmap(globals.tiles.tile[TILE_OK], 0, 0, 64, 64, x , y , tile_size, tile_size,  0x0);
+                }
+                if (place_house){
+                    al_draw_scaled_bitmap(globals.tiles.tile[TILE_BAD], 0, 0, 64, 64, x , y , tile_size, tile_size,  0x0);
+                }
             }
             if (tile_type == TILE_WATER){
                 al_draw_scaled_bitmap(globals.tiles.tile[TILE_WATER], 0, 0, 64, 64, x , y , tile_size, tile_size, 0x0);
+                if (place_tower || place_house){
+                    al_draw_scaled_bitmap(globals.tiles.tile[TILE_BAD], 0, 0, 64, 64, x , y , tile_size, tile_size,  0x0);
+                }
             }
             if (tile_type == TILE_GRASS){
                 al_draw_scaled_bitmap(globals.tiles.tile[TILE_GRASS], 0, 0, 64, 64, x , y , tile_size, tile_size, 0x0);
+                if (place_tower || place_house){
+                    al_draw_scaled_bitmap(globals.tiles.tile[TILE_OK], 0, 0, 64, 64, x , y , tile_size, tile_size,  0x0);
+                }
             }
             //draw grid around the tile if enabled
             if (globals.game_state.grid_en == true){
@@ -115,7 +152,9 @@ void draw_map(void)
 void draw_cursor_rect(void)
 {
     float offset = 0.5; //define pixels in the centre of a pixel area
-    ALLEGRO_COLOR cursor_color = al_map_rgb(255, 0, 0);  //red
+    ALLEGRO_COLOR cursor_color0 = al_map_rgb(112,128,144); //slate gray
+    ALLEGRO_COLOR cursor_color1 = al_map_rgb(176,196,222); //light steel blue
+
     float x,y;
     float mouse_x,mouse_y;
 
@@ -152,7 +191,14 @@ void draw_cursor_rect(void)
     }
     y = y - (globals.game_state.screen_center.y - globals.game_state.screen_h/2);
 
-    al_draw_rectangle(x + offset,y + offset, x + tile_size-1 + offset,y + tile_size-1 + offset, cursor_color, 2);
+    al_draw_rectangle(x + offset + 1,y + offset + 1, x + tile_size-2 + offset,y + tile_size-2 + offset, cursor_color0, 3);
+    al_draw_rectangle(x + offset + 1,y + offset + 1, x + tile_size-2 + offset,y + tile_size-2 + offset, cursor_color1, 1);
+    if(globals.game_state.tower0_place == true){
+        //draw tower base
+        al_draw_tinted_scaled_bitmap(globals.objects[OBJ_TOWER], al_map_rgba_f(1, 1, 1, 0.5), 0, 0, 64, 64, x , y, tile_size, tile_size, 0x0);
+        //draw tower cannon
+        al_draw_tinted_scaled_bitmap(globals.objects[OBJ_TOWER_GUN],al_map_rgba_f(1, 1, 1, 0.5), 0, 0, 64, 64, x , y, tile_size, tile_size, 0x0);
+    }
 }
 
 void draw_build_menu(void)
@@ -176,13 +222,26 @@ void draw_build_menu(void)
         al_draw_rectangle(x0+1, y0+1, x1-1, y1-1, border_color0, 3);
         al_draw_rectangle(x0+2, y0+2, x1-2, y1-2, border_color1, 1);
 
+        ALLEGRO_COLOR plan_color    = al_map_rgb(135,206,235); //sky blue
+        ALLEGRO_COLOR plan_selected_color    = al_map_rgb(139,0,139); //sky blue
+
         if (globals.game_state.tower0_en == true){
-            ALLEGRO_COLOR tower0_color    = al_map_rgb(192,192,192); //silver
-            al_draw_filled_rectangle(x0+19, y0+19, x0+19+63, y0+19+63, tower0_color);
+            if(globals.game_state.tower0_place == true){
+                al_draw_filled_rectangle(x0+19, y0+19, x0+19+63, y0+19+63, plan_selected_color);
+            } else {
+                al_draw_filled_rectangle(x0+19, y0+19, x0+19+63, y0+19+63, plan_color);
+            }
+            //draw tower base
+            al_draw_bitmap(globals.objects[OBJ_TOWER], x0+19 , y0+19 , 0x0);
+            //draw tower cannon
+            al_draw_bitmap(globals.objects[OBJ_TOWER_GUN], x0+19, y0+19, 0x0);
         }
         if (globals.game_state.house0_en == true){
-            ALLEGRO_COLOR house0_color    = al_map_rgb(154,205,50); //yellow green
-            al_draw_filled_rectangle(x0+100, y0+19, x0+100+63, y0+19+63, house0_color);
+            if(globals.game_state.house0_place == true){
+                al_draw_filled_rectangle(x0+19, y0+19, x0+19+63, y0+19+63, plan_selected_color);
+            } else {
+                al_draw_filled_rectangle(x0+19, y0+19, x0+19+63, y0+19+63, plan_color);
+            }
         }
     }
 }
@@ -249,7 +308,7 @@ void draw_towers(void)
     tile_size = globals.tiles.tile_size;
 
     while(cursor != NULL){
-        //conver virtual position to resized position
+        //convert virtual position to resized position
         float mult;
         switch(globals.game_state.zoom){
             case 0:

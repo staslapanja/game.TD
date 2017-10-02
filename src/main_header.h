@@ -7,13 +7,15 @@
 #include <stdio.h>
 #include <math.h>
 
-#define TILE_NUM    8
+#define TILE_NUM    7
 
 #define TILE_BLANK  0
 #define TILE_LAND   1
 #define TILE_HILL   2
 #define TILE_WATER  3
 #define TILE_GRASS  4
+#define TILE_OK     5
+#define TILE_BAD    6
 
 #define OBJ_NUM         4
 
@@ -38,9 +40,13 @@ struct game_state_t{
     bool grid_en;
     bool build_menu_on;
     bool tower0_en;
+    bool tower0_place;
     bool tower1_en;
+    bool tower1_place;
     bool house0_en;
+    bool house0_place;
     bool house1_en;
+    bool house1_place;
     int zoom;
     struct xy_t screen_center;
     float screen_step;
