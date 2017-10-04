@@ -43,6 +43,8 @@ void init_globals(void)
     globals.enemy_spawn = false;
     globals.towers = NULL;
     globals.buildings = NULL;
+    globals.river = NULL;
+    globals.rail = NULL;
 }
 
 void init_tiles(int w, int h)
@@ -79,7 +81,7 @@ void create_map(void)
     }
 }
 
-void add_river(void)
+void create_river(void)
 {
     int h,w;
 
@@ -94,6 +96,53 @@ void add_river(void)
     }
 }
 
+void create_rail(void)
+{
+    globals.rail = (struct path_t*)malloc(sizeof(struct path_t) * globals.tiles.tile_w * globals.tiles.tile_h);
+
+    //fixed rail configuration
+    //start of rail
+    int i = 0;
+    globals.rail[i].pos.x = 0;
+    globals.rail[i].pos.y = 1;
+    globals.rail[i].pos_prev.x = -1;
+    globals.rail[i].pos_prev.y = -1;
+    i++;
+    int j;
+    //go to right side - 1
+    j = 1;
+    while (j < globals.tiles.tile_w - 1){
+        globals.rail[i].pos.x = globals.rail[i-1].pos.x + 1;
+        globals.rail[i].pos.y = globals.rail[i-1].pos.y;
+        globals.rail[i].pos_prev = globals.rail[i-1].pos;
+        globals.rail[i-1].pos_next = globals.rail[i].pos;
+        i++;
+        j++;
+    }
+    //go down to bottom -1
+    j = 1;
+    while (j < globals.tiles.tile_h - 1){
+        globals.rail[i].pos.x = globals.rail[i-1].pos.x;
+        globals.rail[i].pos.y = globals.rail[i-1].pos.y + 1;
+        globals.rail[i].pos_prev = globals.rail[i-1].pos;
+        globals.rail[i-1].pos_next = globals.rail[i].pos;
+        i++;
+        j++;
+    }
+    //go to left side
+    j = globals.rail[i-1].pos.x;
+    while (j >= 0){
+        globals.rail[i].pos.x = globals.rail[i-1].pos.x - 1;
+        globals.rail[i].pos.y = globals.rail[i-1].pos.y;
+        globals.rail[i].pos_prev = globals.rail[i-1].pos;
+        globals.rail[i-1].pos_next = globals.rail[i].pos;
+        i++;
+        j--;
+    }
+    globals.rail[i-1].pos_next.x = -1;
+    globals.rail[i-1].pos_next.y = -1;
+
+}
 
 void keyboard_actions(void)
 {
@@ -348,6 +397,29 @@ void update_towers(void)
         }
         t_cursor = t_cursor->next;
     }
+}
+
+void init_logic(void)
+{
+
+    init_tiles(10,10);
+
+    create_map();
+    //create_river();
+    create_rail();
+
+    move_screen(globals.tiles.map_center);
+
+    //TEMP!!! for testing purposes
+    struct tower_t *temp = NULL;
+    temp = create_tower(64*2, 64*7, 0, 1, 1, 256);
+    globals.towers = t_append_ll_item(globals.towers,temp);
+    temp = create_tower(64*0, 64*7, 0, 1, 1, 256);
+    globals.towers = t_append_ll_item(globals.towers,temp);
+    temp = create_tower(64*5, 64*7, 0, 1, 1, 256);
+    globals.towers = t_append_ll_item(globals.towers,temp);
+    temp = create_tower(64*5, 64*9, 0, 1, 1, 256);
+    globals.towers = t_append_ll_item(globals.towers,temp);
 }
 
 void update_logic(void)

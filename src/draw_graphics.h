@@ -5,6 +5,7 @@
 
 void create_tiles(void);
 void create_game_objects(void);
+void init_graphics(void);
 void update_graphics(void);
 void draw_background(void);
 void draw_map(void);

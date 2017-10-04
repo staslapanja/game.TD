@@ -16,6 +16,8 @@
 #define TILE_GRASS  4
 #define TILE_OK     5
 #define TILE_BAD    6
+#define TILE_RAIL_STRAIGHT  7
+#define TILE_RAIL_CORNER    8
 
 #define OBJ_NUM         4
 
@@ -114,6 +116,12 @@ struct building_t{
     struct building_t *next;
 };
 
+struct path_t{
+    struct xy_t pos;
+    struct xy_t pos_prev;
+    struct xy_t pos_next;
+};
+
 struct globals_t {
     struct keys_t keys;
     struct mouse_t mouse;
@@ -125,6 +133,9 @@ struct globals_t {
     struct tower_t *towers;
     struct building_t *buildings;
     ALLEGRO_BITMAP *objects[OBJ_NUM];
+    struct path_t *river;
+    struct path_t *rail;
+
 };
 
 #endif

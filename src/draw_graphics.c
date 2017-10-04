@@ -46,9 +46,23 @@ void create_tiles(void)
     al_draw_line(15,63, 63,15, al_map_rgb(255, 0, 0), 2);
     al_draw_line(31,63, 63,31, al_map_rgb(255, 0, 0), 2);
     al_draw_line(47,63, 63,47, al_map_rgb(255, 0, 0), 2);
+    //TILE_RAIL_STRAIGHT  7
+    globals.tiles.tile[TILE_RAIL_STRAIGHT] = al_create_bitmap(64, 64);
+    al_set_target_bitmap(globals.tiles.tile[TILE_RAIL_STRAIGHT]);
+    al_draw_filled_rectangle(16, 0, 47, 63, al_map_rgb(105,105,105));//dim gray / dim grey
+    al_draw_filled_rectangle(30, 0, 33, 63, al_map_rgb(75,0,130));//indigo
+    //TILE_RAIL_CORNER    8
+    globals.tiles.tile[TILE_RAIL_CORNER] = al_create_bitmap(64, 64);
+    al_set_target_bitmap(globals.tiles.tile[TILE_RAIL_CORNER]);
+    al_draw_filled_rectangle(16, 0, 47, 47, al_map_rgb(105,105,105));//dim gray / dim grey
+    al_draw_filled_rectangle(48, 16,63, 47, al_map_rgb(105,105,105));//dim gray / dim grey
+    al_draw_filled_rectangle(30, 0, 33, 33, al_map_rgb(75,0,130));//indigo
+    al_draw_filled_rectangle(34,30, 63, 33, al_map_rgb(75,0,130));//indigo
 
     //reselect the display buffer
     al_set_target_backbuffer(display);
+
+
 }
 
 void create_game_objects(void)
@@ -69,6 +83,12 @@ void create_game_objects(void)
 
     //reselect the display buffer
     al_set_target_backbuffer(display);
+}
+
+void init_graphics(void)
+{
+    create_tiles();
+    create_game_objects();
 }
 
 void update_graphics(void)

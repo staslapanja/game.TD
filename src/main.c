@@ -55,26 +55,8 @@ void init(void)
     srand(time(NULL));
 
     init_globals();
-    create_tiles();
-    create_game_objects();
-
-    init_tiles(10,10);
-
-    create_map();
-    add_river();
-
-    move_screen(globals.tiles.map_center);
-
-    //TEMP!!!
-    struct tower_t *temp = NULL;
-    temp = create_tower(64*2, 64*7, 0, 1, 1, 256);
-    globals.towers = t_append_ll_item(globals.towers,temp);
-    temp = create_tower(64*0, 64*7, 0, 1, 1, 256);
-    globals.towers = t_append_ll_item(globals.towers,temp);
-    temp = create_tower(64*5, 64*7, 0, 1, 1, 256);
-    globals.towers = t_append_ll_item(globals.towers,temp);
-    temp = create_tower(64*5, 64*9, 0, 1, 1, 256);
-    globals.towers = t_append_ll_item(globals.towers,temp);
+    init_graphics();
+    init_logic();
 }
 
 void shutdown(void)
