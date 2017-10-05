@@ -120,7 +120,7 @@ void create_rail(void)
         j++;
     }
     //go down to bottom -1
-    j = 1;
+    j = 2;
     while (j < globals.tiles.tile_h - 1){
         globals.rail[i].pos.x = globals.rail[i-1].pos.x;
         globals.rail[i].pos.y = globals.rail[i-1].pos.y + 1;
@@ -131,7 +131,7 @@ void create_rail(void)
     }
     //go to left side
     j = globals.rail[i-1].pos.x;
-    while (j >= 0){
+    while (j > 0){
         globals.rail[i].pos.x = globals.rail[i-1].pos.x - 1;
         globals.rail[i].pos.y = globals.rail[i-1].pos.y;
         globals.rail[i].pos_prev = globals.rail[i-1].pos;

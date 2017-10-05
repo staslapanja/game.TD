@@ -49,15 +49,15 @@ void create_tiles(void)
     //TILE_RAIL_STRAIGHT  7
     globals.tiles.tile[TILE_RAIL_STRAIGHT] = al_create_bitmap(64, 64);
     al_set_target_bitmap(globals.tiles.tile[TILE_RAIL_STRAIGHT]);
-    al_draw_filled_rectangle(16, 0, 47, 63, al_map_rgb(105,105,105));//dim gray / dim grey
-    al_draw_filled_rectangle(30, 0, 33, 63, al_map_rgb(75,0,130));//indigo
+    al_draw_filled_rectangle(16+0.5, 0+0.5, 47+0.5, 64+0.5, al_map_rgb(105,105,105));//dim gray / dim grey
+    al_draw_filled_rectangle(30+0.5, 0+0.5, 33+0.5, 64+0.5, al_map_rgb(75,0,130));//indigo
     //TILE_RAIL_CORNER    8
     globals.tiles.tile[TILE_RAIL_CORNER] = al_create_bitmap(64, 64);
     al_set_target_bitmap(globals.tiles.tile[TILE_RAIL_CORNER]);
-    al_draw_filled_rectangle(16, 0, 47, 47, al_map_rgb(105,105,105));//dim gray / dim grey
-    al_draw_filled_rectangle(48, 16,63, 47, al_map_rgb(105,105,105));//dim gray / dim grey
-    al_draw_filled_rectangle(30, 0, 33, 33, al_map_rgb(75,0,130));//indigo
-    al_draw_filled_rectangle(34,30, 63, 33, al_map_rgb(75,0,130));//indigo
+    al_draw_filled_rectangle(16+0.5, 0+0.5, 47+0.5, 47+0.5, al_map_rgb(105,105,105));//dim gray / dim grey
+    al_draw_filled_rectangle(48+0.5, 16+0.5,64+0.5, 47+0.5, al_map_rgb(105,105,105));//dim gray / dim grey
+    al_draw_filled_rectangle(30+0.5, 0+0.5, 33+0.5, 33+0.5, al_map_rgb(75,0,130));//indigo
+    al_draw_filled_rectangle(34+0.5,30+0.5, 64+0.5, 33+0.5, al_map_rgb(75,0,130));//indigo
 
     //reselect the display buffer
     al_set_target_backbuffer(display);
@@ -95,6 +95,7 @@ void update_graphics(void)
 {
     draw_background();
     draw_map();
+    draw_rail();
     draw_enemy();
     draw_towers();
     draw_cursor_rect();
@@ -165,6 +166,98 @@ void draw_map(void)
                 al_draw_rectangle(x + offset,y + offset, x + tile_size-1 + offset,y + tile_size-1 + offset, grid_color, 1);
             }
         }
+    }
+
+}
+
+void draw_rail(void)
+{
+    int w,h,i;
+    int w_prev,h_prev,w_next,h_next;
+    int dw0, dw1, dh0, dh1;
+    float x,y;
+    int tile_size;
+    float mult;
+    float offset = 0.5; //define pixels in the center of a pixel area
+
+    tile_size = globals.tiles.tile_size;
+    mult = tile_size/64;
+
+    i = 0;
+        w = globals.rail[i].pos.x;
+        h = globals.rail[i].pos.y;
+        x = globals.game_state.screen_w/2 - globals.game_state.screen_center.x + w * tile_size;
+        y = globals.game_state.screen_h/2 - globals.game_state.screen_center.y + h * tile_size;
+        al_draw_scaled_rotated_bitmap(globals.tiles.tile[TILE_RAIL_STRAIGHT], 0, 0, x+offset, y+(63*mult)+offset, mult, mult, -ALLEGRO_PI/2, 0x0);
+
+        w = globals.rail[i].pos_next.x;
+        h = globals.rail[i].pos_next.y;
+    while ((w != -1) && (h != -1)){
+        i++;
+        w_prev = globals.rail[i].pos_prev.x;
+        h_prev = globals.rail[i].pos_prev.y;
+        w_next = globals.rail[i].pos_next.x;
+        h_next = globals.rail[i].pos_next.y;
+
+        x = globals.game_state.screen_w/2 - globals.game_state.screen_center.x + w * tile_size;
+        y = globals.game_state.screen_h/2 - globals.game_state.screen_center.y + h * tile_size;
+
+        //check if not last rail piece
+        //first was already set manually so it does not have to be checked
+        if ((w_next != -1) && (h_next != -1)){
+            dw0 = w - w_prev;
+            dw1 = w_next - w;
+            dh0 = h - h_prev;
+            dh1 = h_next - h;
+            //straight section in x direction
+            if ((dw0 != 0) && (dw1 != 0)){
+                al_draw_scaled_rotated_bitmap(globals.tiles.tile[TILE_RAIL_STRAIGHT], 0, 0, x+offset, y+(63*mult)+offset, mult, mult, -ALLEGRO_PI/2, 0x0);
+            }
+            //straight section in y direction
+            if ((dh0 != 0) && (dh1 != 0)){
+                al_draw_scaled_rotated_bitmap(globals.tiles.tile[TILE_RAIL_STRAIGHT], 0, 0, x+offset, y+offset, mult, mult, 0, 0x0);
+            }
+            //corner section
+            //N-E
+            if ((dw0 == 0) && (dw1 == 1) && (dh0 == 1) && (dh1 == 0)){
+                al_draw_scaled_rotated_bitmap(globals.tiles.tile[TILE_RAIL_CORNER], 0, 0, x+offset, y+offset, mult, mult, 0, 0x0);
+            }
+            //N-W
+            if ((dw0 == 0) && (dw1 == -1) && (dh0 == 1) && (dh1 == 0)){
+                al_draw_scaled_rotated_bitmap(globals.tiles.tile[TILE_RAIL_CORNER], 0, 63, x+(63*mult)+offset, y+(63*mult)+offset, mult, mult, -ALLEGRO_PI/2, 0x0);
+            }
+            //S-E
+            if ((dw0 == 0) && (dw1 == 1) && (dh0 == -1) && (dh1 == 0)){
+                al_draw_scaled_rotated_bitmap(globals.tiles.tile[TILE_RAIL_CORNER], 0, 0, x+(63*mult)+offset, y+offset, mult, mult, ALLEGRO_PI/2, 0x0);
+            }
+            //W-S
+            if ((dw0 == 1) && (dw1 == 0) && (dh0 == 0) && (dh1 == 1)){
+                al_draw_scaled_rotated_bitmap(globals.tiles.tile[TILE_RAIL_CORNER], 63, 63, x+offset, y+offset, mult, mult, ALLEGRO_PI, 0x0);
+            }
+            //E-N
+            if ((dw0 == -1) && (dw1 == 0) && (dh0 == 0) && (dh1 == -1)){
+                al_draw_scaled_rotated_bitmap(globals.tiles.tile[TILE_RAIL_CORNER], 0, 0, x+offset, y+offset, mult, mult, 0, 0x0);
+            }
+            //E-S
+            if ((dw0 == -1) && (dw1 == 0) && (dh0 == 0) && (dh1 == -1)){
+                al_draw_scaled_rotated_bitmap(globals.tiles.tile[TILE_RAIL_CORNER], 0, 0, x+(63*mult)+offset, y+offset, mult, mult, ALLEGRO_PI/2, 0x0);
+            }
+            //S-W
+            if ((dw0 == 0) && (dw1 == -1) && (dh0 == -1) && (dh1 == 0)){
+                al_draw_scaled_rotated_bitmap(globals.tiles.tile[TILE_RAIL_CORNER], 63, 63, x+offset, y+offset, mult, mult, ALLEGRO_PI, 0x0);
+            }
+            //W-N
+            if ((dw0 == 1) && (dw1 == 0) && (dh0 == 0) && (dh1 == -1)){
+                al_draw_scaled_rotated_bitmap(globals.tiles.tile[TILE_RAIL_CORNER], 0, 63, x+(63*mult)+offset, y+(63*mult)+offset, mult, mult, -ALLEGRO_PI/2, 0x0);
+            }
+        } else {
+            //draw last tile
+            al_draw_scaled_rotated_bitmap(globals.tiles.tile[TILE_RAIL_STRAIGHT], 0, 0, x+offset, y+(63*mult)+offset, mult, mult, -ALLEGRO_PI/2, 0x0);
+        }
+
+        //set next position variables
+        w = w_next;
+        h = h_next;
     }
 
 }

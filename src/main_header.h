@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <math.h>
 
-#define TILE_NUM    7
+#define TILE_NUM    9
 
 #define TILE_BLANK  0
 #define TILE_LAND   1
