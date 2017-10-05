@@ -45,6 +45,10 @@ void init_globals(void)
     globals.buildings = NULL;
     globals.river = NULL;
     globals.rail = NULL;
+    globals.rail_start.x = 0;
+    globals.rail_start.y = 0;
+    globals.rail_finish.x = 0;
+    globals.rail_finish.y = 0;
 }
 
 void init_tiles(int w, int h)
@@ -107,6 +111,7 @@ void create_rail(void)
     globals.rail[i].pos.y = 1;
     globals.rail[i].pos_prev.x = -1;
     globals.rail[i].pos_prev.y = -1;
+    globals.rail_start = globals.rail[i].pos;
     i++;
     int j;
     //go to right side - 1
@@ -141,7 +146,10 @@ void create_rail(void)
     }
     globals.rail[i-1].pos_next.x = -1;
     globals.rail[i-1].pos_next.y = -1;
+    globals.rail_finish = globals.rail[i-1].pos;
 
+
+    //REMOVE UNUSED MEMORY!!!
 }
 
 void keyboard_actions(void)
@@ -291,7 +299,7 @@ void update_enemy(void)
     //create enemy if less than max
     if (globals.enemy_spawn == true) {
         struct enemy_t *temp = NULL;
-        temp = create_enemy(64, 0, 2, 100);
+        temp = create_enemy(globals.rail_start.x * 64, globals.rail_start.y * 64, 2, 100);
         globals.enemy = append_ll_item(globals.enemy,temp);
         globals.enemy_num++;
         globals.enemy_spawn = false;
@@ -330,6 +338,10 @@ void update_enemy(void)
 void update_enemy_path(struct enemy_t *a)
 {
     int virtual_tile_size = 64;
+    //always move towards the next path centre
+    struct xy_t path_pos;
+    int path_num = a->path_num;
+    path_pos = globals.rail[path_num].pos;
 
     if ((a->position.x == virtual_tile_size) && (a->position.y < (globals.tiles.tile_h-2) * virtual_tile_size)){
         a->position.y += a->speed;

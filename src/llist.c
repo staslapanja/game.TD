@@ -65,6 +65,7 @@ struct enemy_t* create_enemy(int x, int y, float speed, float health)
     struct enemy_t *a = (struct enemy_t*)malloc(sizeof(struct enemy_t));
     a->position.x = x;
     a->position.y = y;
+    a->path_num = 0;
     a->speed = speed;
     a->max_health = health;
     a->health = health;
@@ -146,6 +147,6 @@ struct tower_t* create_tower(int x, int y, float angle, float damage, int level,
     a->target = NULL;
     a->prev = NULL;
     a->next = NULL;
-    
+
     return a;
 }

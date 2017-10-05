@@ -49,15 +49,15 @@ void create_tiles(void)
     //TILE_RAIL_STRAIGHT  7
     globals.tiles.tile[TILE_RAIL_STRAIGHT] = al_create_bitmap(64, 64);
     al_set_target_bitmap(globals.tiles.tile[TILE_RAIL_STRAIGHT]);
-    al_draw_filled_rectangle(16+0.5, 0+0.5, 47+0.5, 64+0.5, al_map_rgb(105,105,105));//dim gray / dim grey
-    al_draw_filled_rectangle(30+0.5, 0+0.5, 33+0.5, 64+0.5, al_map_rgb(75,0,130));//indigo
+    al_draw_filled_rectangle(16, 0, 48, 64, al_map_rgb(105,105,105));//dim gray / dim grey
+    al_draw_filled_rectangle(30, 0, 34, 64, al_map_rgb(75,0,130));//indigo
     //TILE_RAIL_CORNER    8
     globals.tiles.tile[TILE_RAIL_CORNER] = al_create_bitmap(64, 64);
     al_set_target_bitmap(globals.tiles.tile[TILE_RAIL_CORNER]);
-    al_draw_filled_rectangle(16+0.5, 0+0.5, 47+0.5, 47+0.5, al_map_rgb(105,105,105));//dim gray / dim grey
-    al_draw_filled_rectangle(48+0.5, 16+0.5,64+0.5, 47+0.5, al_map_rgb(105,105,105));//dim gray / dim grey
-    al_draw_filled_rectangle(30+0.5, 0+0.5, 33+0.5, 33+0.5, al_map_rgb(75,0,130));//indigo
-    al_draw_filled_rectangle(34+0.5,30+0.5, 64+0.5, 33+0.5, al_map_rgb(75,0,130));//indigo
+    al_draw_filled_rectangle(16, 0, 48, 48, al_map_rgb(105,105,105));//dim gray / dim grey
+    al_draw_filled_rectangle(48, 16,64, 48, al_map_rgb(105,105,105));//dim gray / dim grey
+    al_draw_filled_rectangle(30, 0, 34, 34, al_map_rgb(75,0,130));//indigo
+    al_draw_filled_rectangle(34,30, 64, 34, al_map_rgb(75,0,130));//indigo
 
     //reselect the display buffer
     al_set_target_backbuffer(display);
@@ -181,14 +181,14 @@ void draw_rail(void)
     float offset = 0.5; //define pixels in the center of a pixel area
 
     tile_size = globals.tiles.tile_size;
-    mult = tile_size/64;
+    mult = (float)tile_size/64;
 
     i = 0;
         w = globals.rail[i].pos.x;
         h = globals.rail[i].pos.y;
         x = globals.game_state.screen_w/2 - globals.game_state.screen_center.x + w * tile_size;
         y = globals.game_state.screen_h/2 - globals.game_state.screen_center.y + h * tile_size;
-        al_draw_scaled_rotated_bitmap(globals.tiles.tile[TILE_RAIL_STRAIGHT], 0, 0, x+offset, y+(63*mult)+offset, mult, mult, -ALLEGRO_PI/2, 0x0);
+        al_draw_scaled_rotated_bitmap(globals.tiles.tile[TILE_RAIL_STRAIGHT], 32, 32, x+(32*mult)+offset, y+(32*mult)+offset, mult, mult, -ALLEGRO_PI/2, 0x0);
 
         w = globals.rail[i].pos_next.x;
         h = globals.rail[i].pos_next.y;
@@ -211,7 +211,7 @@ void draw_rail(void)
             dh1 = h_next - h;
             //straight section in x direction
             if ((dw0 != 0) && (dw1 != 0)){
-                al_draw_scaled_rotated_bitmap(globals.tiles.tile[TILE_RAIL_STRAIGHT], 0, 0, x+offset, y+(63*mult)+offset, mult, mult, -ALLEGRO_PI/2, 0x0);
+                al_draw_scaled_rotated_bitmap(globals.tiles.tile[TILE_RAIL_STRAIGHT], 32, 32, x+(32*mult)+offset, y+(32*mult)+offset, mult, mult, -ALLEGRO_PI/2, 0x0);
             }
             //straight section in y direction
             if ((dh0 != 0) && (dh1 != 0)){
@@ -220,39 +220,39 @@ void draw_rail(void)
             //corner section
             //N-E
             if ((dw0 == 0) && (dw1 == 1) && (dh0 == 1) && (dh1 == 0)){
-                al_draw_scaled_rotated_bitmap(globals.tiles.tile[TILE_RAIL_CORNER], 0, 0, x+offset, y+offset, mult, mult, 0, 0x0);
+                al_draw_scaled_rotated_bitmap(globals.tiles.tile[TILE_RAIL_CORNER], 32, 32, x+(32*mult)+offset, y+(32*mult)+offset, mult, mult, 0, 0x0);
             }
             //N-W
             if ((dw0 == 0) && (dw1 == -1) && (dh0 == 1) && (dh1 == 0)){
-                al_draw_scaled_rotated_bitmap(globals.tiles.tile[TILE_RAIL_CORNER], 0, 63, x+(63*mult)+offset, y+(63*mult)+offset, mult, mult, -ALLEGRO_PI/2, 0x0);
+                al_draw_scaled_rotated_bitmap(globals.tiles.tile[TILE_RAIL_CORNER], 32, 32, x+(32*mult)+offset, y+(32*mult)+offset, mult, mult, -ALLEGRO_PI/2, 0x0);
             }
             //S-E
             if ((dw0 == 0) && (dw1 == 1) && (dh0 == -1) && (dh1 == 0)){
-                al_draw_scaled_rotated_bitmap(globals.tiles.tile[TILE_RAIL_CORNER], 0, 0, x+(63*mult)+offset, y+offset, mult, mult, ALLEGRO_PI/2, 0x0);
+                al_draw_scaled_rotated_bitmap(globals.tiles.tile[TILE_RAIL_CORNER], 32, 32, x+(32*mult)+offset, y+(32*mult)+offset, mult, mult, ALLEGRO_PI/2, 0x0);
             }
             //W-S
             if ((dw0 == 1) && (dw1 == 0) && (dh0 == 0) && (dh1 == 1)){
-                al_draw_scaled_rotated_bitmap(globals.tiles.tile[TILE_RAIL_CORNER], 63, 63, x+offset, y+offset, mult, mult, ALLEGRO_PI, 0x0);
+                al_draw_scaled_rotated_bitmap(globals.tiles.tile[TILE_RAIL_CORNER], 32, 32, x+(32*mult)+offset-1, y+(32*mult)+offset, mult, mult, ALLEGRO_PI, 0x0);
             }
             //E-N
             if ((dw0 == -1) && (dw1 == 0) && (dh0 == 0) && (dh1 == -1)){
-                al_draw_scaled_rotated_bitmap(globals.tiles.tile[TILE_RAIL_CORNER], 0, 0, x+offset, y+offset, mult, mult, 0, 0x0);
+                al_draw_scaled_rotated_bitmap(globals.tiles.tile[TILE_RAIL_CORNER], 32, 32, x+(32*mult)+offset, y+(32*mult)+offset, mult, mult, 0, 0x0);
             }
             //E-S
             if ((dw0 == -1) && (dw1 == 0) && (dh0 == 0) && (dh1 == -1)){
-                al_draw_scaled_rotated_bitmap(globals.tiles.tile[TILE_RAIL_CORNER], 0, 0, x+(63*mult)+offset, y+offset, mult, mult, ALLEGRO_PI/2, 0x0);
+                al_draw_scaled_rotated_bitmap(globals.tiles.tile[TILE_RAIL_CORNER], 32, 32, x+(32*mult)+offset, y+(32*mult)+offset, mult, mult, ALLEGRO_PI/2, 0x0);
             }
             //S-W
             if ((dw0 == 0) && (dw1 == -1) && (dh0 == -1) && (dh1 == 0)){
-                al_draw_scaled_rotated_bitmap(globals.tiles.tile[TILE_RAIL_CORNER], 63, 63, x+offset, y+offset, mult, mult, ALLEGRO_PI, 0x0);
+                al_draw_scaled_rotated_bitmap(globals.tiles.tile[TILE_RAIL_CORNER], 32, 32, x+(32*mult)+offset, y+(32*mult)+offset, mult, mult, ALLEGRO_PI, 0x0);
             }
             //W-N
             if ((dw0 == 1) && (dw1 == 0) && (dh0 == 0) && (dh1 == -1)){
-                al_draw_scaled_rotated_bitmap(globals.tiles.tile[TILE_RAIL_CORNER], 0, 63, x+(63*mult)+offset, y+(63*mult)+offset, mult, mult, -ALLEGRO_PI/2, 0x0);
+                al_draw_scaled_rotated_bitmap(globals.tiles.tile[TILE_RAIL_CORNER], 32, 32, x+(32*mult)+offset, y+(32*mult)+offset, mult, mult, -ALLEGRO_PI/2, 0x0);
             }
         } else {
             //draw last tile
-            al_draw_scaled_rotated_bitmap(globals.tiles.tile[TILE_RAIL_STRAIGHT], 0, 0, x+offset, y+(63*mult)+offset, mult, mult, -ALLEGRO_PI/2, 0x0);
+            al_draw_scaled_rotated_bitmap(globals.tiles.tile[TILE_RAIL_STRAIGHT], 32, 32, x+(32*mult)+offset, y+(32*mult)+offset, mult, mult, -ALLEGRO_PI/2, 0x0);
         }
 
         //set next position variables

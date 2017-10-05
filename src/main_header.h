@@ -89,6 +89,7 @@ struct tiles_t {
 
 struct enemy_t{
     struct xy_t position;
+    int path_num;
     float speed;
     float max_health;
     float health;
@@ -135,6 +136,8 @@ struct globals_t {
     ALLEGRO_BITMAP *objects[OBJ_NUM];
     struct path_t *river;
     struct path_t *rail;
+    struct xy_t rail_start;
+    struct xy_t rail_finish;
 
 };
 
