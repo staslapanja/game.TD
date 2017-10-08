@@ -6,6 +6,7 @@
 #include <allegro5/allegro_primitives.h>
 #include <stdio.h>
 #include <math.h>
+#include <stdlib.h>
 
 #define TILE_NUM    9
 
@@ -73,9 +74,17 @@ struct mouse_t{
     bool rb;
     int x;
     int y;
+    int grid_x;
+    int grid_y;
+    int tile_x;
+    int tile_y;
     int dx;
     int dy;
     int dz;
+    int tile_info;
+    bool is_rail;
+    bool is_river;
+    bool is_struct;
 };
 
 struct tiles_t {
@@ -117,7 +126,14 @@ struct building_t{
     struct building_t *next;
 };
 
+struct structures_t{
+    struct tower_t *t;
+    struct building_t *b;
+};
+
+
 struct path_t{
+    bool is_set;
     struct xy_t pos;
     struct xy_t pos_prev;
     struct xy_t pos_next;
@@ -133,12 +149,19 @@ struct globals_t {
     bool enemy_spawn;
     struct tower_t *towers;
     struct building_t *buildings;
+    struct structures_t *structures;
     ALLEGRO_BITMAP *objects[OBJ_NUM];
     struct path_t *river;
     struct path_t *rail;
     struct xy_t rail_start;
     struct xy_t rail_finish;
+    bool place_object_active;
 
 };
+
+#include "draw_graphics.h"
+#include "game_logic.h"
+#include "input.h"
+#include "llist.h"
 
 #endif

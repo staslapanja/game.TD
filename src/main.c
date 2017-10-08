@@ -1,10 +1,5 @@
 
 #include "main_header.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include "draw_graphics.h"
-#include "game_logic.h"
-#include "input.h"
 
 ALLEGRO_EVENT_QUEUE* event_queue;
 ALLEGRO_EVENT event;

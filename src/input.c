@@ -1,6 +1,5 @@
 
 #include "input.h"
-#include "main_header.h"
 
 void get_keyboard_input(void)
 {
