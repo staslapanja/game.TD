@@ -76,6 +76,11 @@ void shutdown(void)
         globals.towers = t_remove_ll_item(globals.towers,globals.towers);
     }
     //buildings
+
+    //free other memory structures
+    free(globals.tiles.p);
+    free(globals.structures);
+    free(globals.rail);
 }
 
 void game_loop(void)

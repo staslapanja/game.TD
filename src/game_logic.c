@@ -307,6 +307,12 @@ void mouse_actions(void)
                 globals.place_object_active = false;
             }
         }
+    } else {
+        globals.game_state.tower0_place = false;
+        globals.game_state.tower1_place = false;
+        globals.game_state.house0_place = false;
+        globals.game_state.house1_place = false;
+        globals.place_object_active = false;
     }
 
     //reset building actions with right click
@@ -315,6 +321,7 @@ void mouse_actions(void)
         globals.game_state.tower1_place = false;
         globals.game_state.house0_place = false;
         globals.game_state.house1_place = false;
+        globals.place_object_active = false;
     }
 
 }
