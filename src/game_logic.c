@@ -533,10 +533,11 @@ void bound_screen(void)
 
 void update_enemy(void)
 {
+    int tile_w = globals.tiles.tile_w;
     //create enemy
     if (globals.enemy_spawn == true) {
         struct enemy_t *temp = NULL;
-        temp = create_enemy(globals.rail_start.x * 64, globals.rail_start.y * 64, 2, 100);
+        temp = create_enemy(globals.rail_start.x * 64, globals.rail_start.y * 64, globals.rail_start.y * tile_w + globals.rail_start.x, 2, 100);
         globals.enemy = append_ll_item(globals.enemy,temp);
         globals.enemy_num++;
         globals.enemy_spawn = false;
@@ -579,6 +580,7 @@ void update_enemy_path(struct enemy_t *a)
     int virtual_tile_size = 64;
     //always move towards the next path centre
     struct xy_t ppos, ppos_next;
+    int tile_w = globals.tiles.tile_w;
     int path_num = a->path_num;
     float e_cx, e_cy;
     float pos_cx, pos_cy;
@@ -594,7 +596,7 @@ void update_enemy_path(struct enemy_t *a)
         ppos_next = globals.rail[path_num].pos_next;
         //if more than one tile from the current centre switch to next centre
         if ( ((abs(e_cx - pos_cx) >= virtual_tile_size)) || ((abs(e_cy - pos_cy) >= virtual_tile_size)) ){
-            a->path_num = a->path_num + 1;
+            a->path_num = ppos_next.y * tile_w + ppos_next.x;
         }
         //move in x direction if next tile in x direction
         if ((ppos_next.x - ppos.x) > 0){
