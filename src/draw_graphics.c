@@ -98,8 +98,10 @@ void update_graphics(void)
     draw_rail();
     draw_enemy();
     draw_towers();
+    draw_floating_text();
     draw_cursor_rect();
     draw_build_menu();
+    draw_top_bar();
 }
 
 void draw_background(void)
@@ -274,19 +276,47 @@ void draw_cursor_rect(void)
     }
 }
 
+void draw_top_bar(void)
+{
+    float offset = 0.5f; //define pixels in the centre of a pixel area
+
+    ALLEGRO_COLOR base_color    = al_map_rgb(112,128,144); //slate gray
+    ALLEGRO_COLOR border_color0 = al_map_rgb(119,136,153); //light slate gray
+    ALLEGRO_COLOR border_color1 = al_map_rgb(176,196,222); //light steel blue
+
+    float x0,y0,x1,y1;
+    int screen_w,top_bar;
+    screen_w = al_get_display_width(display);
+    top_bar = globals.game_state.top_bar_h;
+    x0 = 0;
+    y0 = 0;
+    x1 = screen_w;
+    y1 = top_bar;
+    //graphics
+    al_draw_filled_rectangle(x0, y0, x1, y1, base_color);
+    al_draw_rectangle(x0+1+offset, y0+1+offset, x1-1+offset, y1-1+offset, border_color0, 3);
+    al_draw_rectangle(x0+1+offset, y0+1+offset, x1-1+offset, y1-1+offset, border_color1, 1);
+
+    //text
+    ALLEGRO_COLOR text_color0 = al_map_rgb(176,196,222); //light steel blue
+    al_draw_textf(fonts[0] , text_color0, x0 + 8, y0 + 8, ALLEGRO_ALIGN_LEFT, "Credits: %6.1f",globals.game_state.credits);
+    al_draw_textf(fonts[0] , text_color0, x0 + 350, y0 + 8, ALLEGRO_ALIGN_LEFT, "Energy: %4.f/%4.f",globals.game_state.energy_produced, globals.game_state.energy_required);
+}
+
 void draw_build_menu(void)
 {
     if (globals.game_state.build_menu_on == true){
         float offset = 0.5f; //define pixels in the centre of a pixel area
 
         float x0,y0,x1,y1;
-        int screen_w,screen_h;
+        int screen_w,screen_h,top_bar;
         screen_w = al_get_display_width(display);
         screen_h = al_get_display_height(display);
-        x0 = screen_w-globals.game_state.side_menu_w + offset;
-        y0 = offset;
-        x1 = screen_w + offset;
-        y1 = screen_h + offset;
+        top_bar = globals.game_state.top_bar_h;
+        x0 = screen_w-globals.game_state.side_menu_w;
+        y0 = top_bar;
+        x1 = screen_w;
+        y1 = screen_h;
         ALLEGRO_COLOR base_color    = al_map_rgb(112,128,144); //slate gray
         ALLEGRO_COLOR border_color0 = al_map_rgb(119,136,153); //light slate gray
         ALLEGRO_COLOR border_color1 = al_map_rgb(176,196,222); //light steel blue
@@ -380,23 +410,25 @@ void draw_towers(void)
     struct tower_t *cursor = globals.towers;
     tile_size = globals.tiles.tile_size;
 
+    float mult;
+    switch(globals.game_state.zoom){
+        case 0:
+            mult = 0.5;
+            break;
+        case 1:
+            mult = 1;
+            break;
+        case 2:
+            mult = 2;
+            break;
+        default:
+            mult = 1;
+            break;
+    }
+
     while(cursor != NULL){
         //convert virtual position to resized position
-        float mult;
-        switch(globals.game_state.zoom){
-            case 0:
-                mult = 0.5;
-                break;
-            case 1:
-                mult = 1;
-                break;
-            case 2:
-                mult = 2;
-                break;
-            default:
-                mult = 1;
-                break;
-        }
+
         t_x = globals.game_state.screen_w/2 - globals.game_state.screen_center.x + (cursor->position.x * mult);
         t_y = globals.game_state.screen_h/2 - globals.game_state.screen_center.y + (cursor->position.y * mult);
         //draw tower base
@@ -413,6 +445,39 @@ void draw_towers(void)
         //draw tower cannon
         al_draw_scaled_rotated_bitmap(globals.objects[OBJ_TOWER_GUN], 32, 32, t_x+32*mult, t_y+32*mult, mult, mult, cursor->angle, 0x0);
 
+        cursor = cursor->next;
+    }
+}
+
+void draw_floating_text(void)
+{
+    struct float_text_t *cursor = globals.float_text;
+    float x,y;
+
+    float mult;
+    switch(globals.game_state.zoom){
+        case 0:
+            mult = 0.5;
+            break;
+        case 1:
+            mult = 1;
+            break;
+        case 2:
+            mult = 2;
+            break;
+        default:
+            mult = 1;
+            break;
+    }
+
+    while(cursor != NULL){
+        //check if change of font height will be required!!!
+
+        x = globals.game_state.screen_w/2 - globals.game_state.screen_center.x + (cursor->x * mult);
+        y = globals.game_state.screen_h/2 - globals.game_state.screen_center.y + (cursor->y * mult);
+
+        ALLEGRO_COLOR text_color = al_map_rgb(218,165,32); //golden rod
+        al_draw_text(fonts[0] , text_color, x, y, ALLEGRO_ALIGN_LEFT, cursor->text);
         cursor = cursor->next;
     }
 }
