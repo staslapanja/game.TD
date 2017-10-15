@@ -8,16 +8,27 @@ void create_tiles(void)
     globals.tiles.tile[TILE_BLANK] = al_create_bitmap(64, 64);
     al_set_target_bitmap(globals.tiles.tile[TILE_BLANK]);
     al_clear_to_color(al_map_rgb(0, 0, 0));
+
     //TILE_LAND  1
-    globals.tiles.tile[TILE_LAND] = al_create_bitmap(64, 64);
-    al_set_target_bitmap(globals.tiles.tile[TILE_LAND]);
-    al_clear_to_color(al_map_rgba(205, 133, 63, 255));
+    globals.tiles.tile[TILE_LAND] = al_load_bitmap("resources/desert_tile.png");
+
+    if (globals.tiles.tile[TILE_LAND] == NULL) //fallback graphic
+    {
+        globals.tiles.tile[TILE_LAND] = al_create_bitmap(64, 64);
+        al_set_target_bitmap(globals.tiles.tile[TILE_LAND]);
+        al_clear_to_color(al_map_rgba(205, 133, 63, 255));
+    }
+
     //TILE_HILL  2
-    globals.tiles.tile[TILE_HILL] = al_create_bitmap(64, 64);
-    al_set_target_bitmap(globals.tiles.tile[TILE_HILL]);
-    al_clear_to_color(al_map_rgba(205, 133, 63, 255));
-    al_draw_filled_triangle(56, 56, 40, 16, 24, 56, al_map_rgb(139,69,19));
-    al_draw_filled_triangle( 8, 56, 40, 56, 24, 24, al_map_rgb(210,105,30));
+    globals.tiles.tile[TILE_HILL] = al_load_bitmap("resources/desert_tile_hill.png");
+    if (globals.tiles.tile[TILE_LAND] == NULL) //fallback graphic
+    {
+        globals.tiles.tile[TILE_HILL] = al_create_bitmap(64, 64);
+        al_set_target_bitmap(globals.tiles.tile[TILE_HILL]);
+        al_clear_to_color(al_map_rgba(205, 133, 63, 255));
+        al_draw_filled_triangle(56, 56, 40, 16, 24, 56, al_map_rgb(139,69,19));
+        al_draw_filled_triangle( 8, 56, 40, 56, 24, 24, al_map_rgb(210,105,30));
+    }
     //TILE_WATER 3
     globals.tiles.tile[TILE_WATER] = al_create_bitmap(64, 64);
     al_set_target_bitmap(globals.tiles.tile[TILE_WATER]);
@@ -26,38 +37,27 @@ void create_tiles(void)
     globals.tiles.tile[TILE_GRASS] = al_create_bitmap(64, 64);
     al_set_target_bitmap(globals.tiles.tile[TILE_GRASS]);
     al_clear_to_color(al_map_rgba(50, 205, 50, 255));
-    //TILE_OK     5
-    globals.tiles.tile[TILE_OK] = al_create_bitmap(64, 64);
-    al_set_target_bitmap(globals.tiles.tile[TILE_OK]);
-    al_draw_line( 0,47, 16, 63, al_map_rgb(0, 255, 0), 2);
-    al_draw_line( 0,31, 32, 63, al_map_rgb(0, 255, 0), 2);
-    al_draw_line( 0,15, 48, 63, al_map_rgb(0, 255, 0), 2);
-    al_draw_line( 0, 0, 63, 63, al_map_rgb(0, 255, 0), 2);
-    al_draw_line(16, 0, 63, 47, al_map_rgb(0, 255, 0), 2);
-    al_draw_line(32, 0, 63, 31, al_map_rgb(0, 255, 0), 2);
-    al_draw_line(48, 0, 63, 15, al_map_rgb(0, 255, 0), 2);
-    //TILE_BAD    6
-    globals.tiles.tile[TILE_BAD] = al_create_bitmap(64, 64);
-    al_set_target_bitmap(globals.tiles.tile[TILE_BAD]);
-    al_draw_line( 0,15, 15, 0, al_map_rgb(255, 0, 0), 2);
-    al_draw_line( 0,31, 31, 0, al_map_rgb(255, 0, 0), 2);
-    al_draw_line( 0,47, 47, 0, al_map_rgb(255, 0, 0), 2);
-    al_draw_line( 0,63, 63, 0, al_map_rgb(255, 0, 0), 2);
-    al_draw_line(15,63, 63,15, al_map_rgb(255, 0, 0), 2);
-    al_draw_line(31,63, 63,31, al_map_rgb(255, 0, 0), 2);
-    al_draw_line(47,63, 63,47, al_map_rgb(255, 0, 0), 2);
-    //TILE_RAIL_STRAIGHT  7
-    globals.tiles.tile[TILE_RAIL_STRAIGHT] = al_create_bitmap(64, 64);
-    al_set_target_bitmap(globals.tiles.tile[TILE_RAIL_STRAIGHT]);
-    al_draw_filled_rectangle(16, 0, 48, 64, al_map_rgb(105,105,105));//dim gray / dim grey
-    al_draw_filled_rectangle(30, 0, 34, 64, al_map_rgb(75,0,130));//indigo
-    //TILE_RAIL_CORNER    8
-    globals.tiles.tile[TILE_RAIL_CORNER] = al_create_bitmap(64, 64);
-    al_set_target_bitmap(globals.tiles.tile[TILE_RAIL_CORNER]);
-    al_draw_filled_rectangle(16, 0, 48, 48, al_map_rgb(105,105,105));//dim gray / dim grey
-    al_draw_filled_rectangle(48, 16,64, 48, al_map_rgb(105,105,105));//dim gray / dim grey
-    al_draw_filled_rectangle(30, 0, 34, 34, al_map_rgb(75,0,130));//indigo
-    al_draw_filled_rectangle(34,30, 64, 34, al_map_rgb(75,0,130));//indigo
+
+    //TILE_RAIL_STRAIGHT  5
+    globals.tiles.tile[TILE_RAIL_STRAIGHT] = al_load_bitmap("resources/rail_straight.png");
+    if (globals.tiles.tile[TILE_RAIL_STRAIGHT] == NULL) //fallback graphic
+    {
+        globals.tiles.tile[TILE_RAIL_STRAIGHT] = al_create_bitmap(64, 64);
+        al_set_target_bitmap(globals.tiles.tile[TILE_RAIL_STRAIGHT]);
+        al_draw_filled_rectangle(16, 0, 48, 64, al_map_rgb(105,105,105));//dim gray / dim grey
+        al_draw_filled_rectangle(30, 0, 34, 64, al_map_rgb(75,0,130));//indigo
+    }
+    //TILE_RAIL_CORNER    6
+    globals.tiles.tile[TILE_RAIL_CORNER] = al_load_bitmap("resources/rail_corner.png");
+    if (globals.tiles.tile[TILE_RAIL_CORNER] == NULL) //fallback graphic
+    {
+        globals.tiles.tile[TILE_RAIL_CORNER] = al_create_bitmap(64, 64);
+        al_set_target_bitmap(globals.tiles.tile[TILE_RAIL_CORNER]);
+        al_draw_filled_rectangle(16, 0, 48, 48, al_map_rgb(105,105,105));//dim gray / dim grey
+        al_draw_filled_rectangle(48, 16,64, 48, al_map_rgb(105,105,105));//dim gray / dim grey
+        al_draw_filled_rectangle(30, 0, 34, 34, al_map_rgb(75,0,130));//indigo
+        al_draw_filled_rectangle(34,30, 64, 34, al_map_rgb(75,0,130));//indigo
+    }
 
     //reselect the display buffer
     al_set_target_backbuffer(display);
@@ -68,9 +68,13 @@ void create_tiles(void)
 void create_game_objects(void)
 {
     //OBJ_ENEMY
-    globals.objects[OBJ_ENEMY] = al_create_bitmap(64, 64);
-    al_set_target_bitmap(globals.objects[OBJ_ENEMY]);
-    al_draw_filled_circle(32, 32, 16, al_map_rgba(127, 0, 127, 255));
+    globals.objects[OBJ_ENEMY] = al_load_bitmap("resources/enemy.png");
+    if (globals.objects[OBJ_ENEMY] == NULL) //fallback graphic
+    {
+        globals.objects[OBJ_ENEMY] = al_create_bitmap(64, 64);
+        al_set_target_bitmap(globals.objects[OBJ_ENEMY]);
+        al_draw_filled_circle(32, 32, 16, al_map_rgba(127, 0, 127, 255));
+    }
     //OBJ_TOWER
     globals.objects[OBJ_TOWER] = al_create_bitmap(64, 64);
     al_set_target_bitmap(globals.objects[OBJ_TOWER]);
@@ -378,7 +382,8 @@ void draw_enemy(void)
         x = globals.game_state.screen_w/2 - globals.game_state.screen_center.x + (cursor->position.x * mult);
         y = globals.game_state.screen_h/2 - globals.game_state.screen_center.y + (cursor->position.y * mult);
         //draw enemy
-        al_draw_scaled_bitmap(globals.objects[OBJ_ENEMY], 0, 0, 64, 64, x , y , tile_size, tile_size, 0x0);
+        al_draw_scaled_rotated_bitmap(globals.objects[OBJ_ENEMY], 32, 32, x+(tile_size/2), y+(tile_size/2), mult, mult, (rand()%360)*(2*ALLEGRO_PI)/360, 0x0);
+        //al_draw_scaled_bitmap(globals.objects[OBJ_ENEMY], 0, 0, 64, 64, x , y , tile_size, tile_size, 0x0);
         //draw enemy health bar
         draw_health_bar(x, y, tile_size, cursor->max_health, cursor->health);
         cursor = cursor->next;

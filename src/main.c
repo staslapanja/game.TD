@@ -48,6 +48,9 @@ void init(void)
     if (!al_init_ttf_addon())
         abort_game("Failed to initialize allegro TTF");
 
+    if (!al_init_image_addon())
+        abort_game("Failed to initialize allegro image");
+
     fonts[0] = al_load_ttf_font("fonts/terminator_real_nfi.ttf",16,0 );
 
     al_register_event_source(event_queue, al_get_mouse_event_source());

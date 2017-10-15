@@ -6,23 +6,22 @@
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
+#include "allegro5/allegro_image.h"
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
 
 #define GAME_UPADTES_PER_SEC 60
 
-#define TILE_NUM    9
+#define TILE_NUM    7
 
 #define TILE_BLANK  0
 #define TILE_LAND   1
 #define TILE_HILL   2
 #define TILE_WATER  3
 #define TILE_GRASS  4
-#define TILE_OK     5
-#define TILE_BAD    6
-#define TILE_RAIL_STRAIGHT  7
-#define TILE_RAIL_CORNER    8
+#define TILE_RAIL_STRAIGHT  5
+#define TILE_RAIL_CORNER    6
 
 #define OBJ_NUM         4
 
