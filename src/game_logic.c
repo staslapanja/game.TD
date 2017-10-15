@@ -45,6 +45,10 @@ void init_globals(void)
     globals.game_state.screen_w = al_get_display_width(display);
     globals.game_state.screen_h = al_get_display_height(display);
     globals.game_state.side_menu_w = 200;
+    globals.game_state.top_bar_h = 32;
+    globals.game_state.credits = 100;
+    globals.game_state.energy_produced = 0;
+    globals.game_state.energy_required = 0;
     //object pointers
     globals.enemy = NULL;
     globals.enemy_num = 0;
@@ -59,6 +63,7 @@ void init_globals(void)
     globals.rail_finish.x = 0;
     globals.rail_finish.y = 0;
     globals.place_object_active = false;
+    globals.float_text = NULL;
 }
 
 void init_tiles(int w, int h)
@@ -278,13 +283,14 @@ void mouse_actions(void)
     //menu actions
     if (globals.game_state.build_menu_on == true){
         float x0,y0;
-        int screen_w;
+        int screen_w,top_bar;
+        top_bar = globals.game_state.top_bar_h;
         screen_w = al_get_display_width(display);
         x0 = screen_w-globals.game_state.side_menu_w;
         y0 = 0;
 
         //check if item selected in menu with left click
-        if (mouse_menu_check(x0+25,y0+25,x0+25+63,y0+25+63)){
+        if (mouse_menu_check(x0+25,y0+25+top_bar,x0+25+63,y0+25+63+top_bar)){
             if (globals.mouse.lb == true){
                 globals.game_state.tower0_place = true;
             }
@@ -537,7 +543,7 @@ void update_enemy(void)
     //create enemy
     if (globals.enemy_spawn == true) {
         struct enemy_t *temp = NULL;
-        temp = create_enemy(globals.rail_start.x * 64, globals.rail_start.y * 64, globals.rail_start.y * tile_w + globals.rail_start.x, 2, 100);
+        temp = create_enemy(globals.rail_start.x * 64, globals.rail_start.y * 64, globals.rail_start.y * tile_w + globals.rail_start.x, 2, 100,10);
         globals.enemy = append_ll_item(globals.enemy,temp);
         globals.enemy_num++;
         globals.enemy_spawn = false;
@@ -555,6 +561,13 @@ void update_enemy(void)
                 }
                 t_cursor = t_cursor->next;
             }
+            //add floating text for credits reward and update credits
+            char text_holder[20];
+            struct float_text_t *temp_ft;
+            sprintf(text_holder, "$%d",cursor->credits);
+            temp_ft = create_float_text(cursor->position.x, cursor->position.y, 1, 60, text_holder);
+            globals.float_text = ft_append_ll_item(globals.float_text,temp_ft);
+            globals.game_state.credits += cursor->credits;
             //remove enemy
             struct enemy_t *temp = cursor;
             cursor = cursor->next;
@@ -673,6 +686,21 @@ void update_towers(void)
     }
 }
 
+void update_float_text(void)
+{
+    struct float_text_t *cursor = globals.float_text;
+    while(cursor != NULL){
+        if (cursor->timeout <= 0){
+            struct float_text_t *temp = cursor;
+            globals.float_text = ft_remove_ll_item(globals.float_text,temp);
+        } else {
+            cursor->y = cursor->y - cursor->move_per_tick;
+            cursor->timeout = cursor->timeout - 1;
+        }
+        cursor = cursor->next;
+    }
+}
+
 void init_logic(void)
 {
 
@@ -710,4 +738,5 @@ void update_logic(void)
 
     update_enemy();
     update_towers();
+    update_float_text();
 }

@@ -24,6 +24,7 @@ void update_enemy(void);
 void update_enemy_path(struct enemy_t *a);
 bool check_enemy_finish(struct enemy_t *a);
 void update_towers(void);
+void update_float_text(void);
 void init_logic(void);
 void update_logic(void);
 

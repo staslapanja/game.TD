@@ -4,6 +4,8 @@
 
 #include <allegro5/allegro5.h>
 #include <allegro5/allegro_primitives.h>
+#include <allegro5/allegro_font.h>
+#include <allegro5/allegro_ttf.h>
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
@@ -27,10 +29,13 @@
 #define OBJ_TOWER_GUN   2
 #define OBJ_BUILDING    3
 
+#define FONTS_NUM   1
+
 extern ALLEGRO_EVENT_QUEUE* event_queue;
 extern ALLEGRO_EVENT event;
 extern ALLEGRO_TIMER* timer;
 extern ALLEGRO_DISPLAY* display;
+extern ALLEGRO_FONT *fonts[FONTS_NUM];
 extern struct globals_t globals;
 
 struct xy_t {
@@ -56,6 +61,10 @@ struct game_state_t{
     int screen_w;
     int screen_h;
     int side_menu_w;
+    int top_bar_h;
+    float credits;
+    float energy_produced;
+    float energy_required;
 };
 
 struct keys_t{
@@ -102,6 +111,7 @@ struct enemy_t{
     float speed;
     float max_health;
     float health;
+    int credits;
     struct enemy_t *prev;
     struct enemy_t *next;
 };
@@ -139,6 +149,16 @@ struct path_t{
     struct xy_t pos_next;
 };
 
+struct float_text_t{
+    int x;
+    int y;
+    int move_per_tick;
+    int timeout;
+    char text[20];
+    struct float_text_t *prev;
+    struct float_text_t *next;
+};
+
 struct globals_t {
     struct keys_t keys;
     struct mouse_t mouse;
@@ -156,6 +176,7 @@ struct globals_t {
     struct xy_t rail_start;
     struct xy_t rail_finish;
     bool place_object_active;
+    struct float_text_t *float_text;
 
 };
 

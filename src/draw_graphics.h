@@ -11,9 +11,11 @@ void draw_background(void);
 void draw_map(void);
 void draw_rail(void);
 void draw_cursor_rect(void);
+void draw_top_bar(void);
 void draw_build_menu(void);
 void draw_enemy(void);
 void draw_health_bar(float x, float y, int len, float max, float value);
 void draw_towers(void);
+void draw_floating_text(void);
 
 #endif

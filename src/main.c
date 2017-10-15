@@ -5,6 +5,7 @@ ALLEGRO_EVENT_QUEUE* event_queue;
 ALLEGRO_EVENT event;
 ALLEGRO_TIMER* timer;
 ALLEGRO_DISPLAY* display;
+ALLEGRO_FONT *fonts[FONTS_NUM];
 
 struct globals_t globals;
 
@@ -40,6 +41,14 @@ void init(void)
 
     if (!al_init_primitives_addon())
         abort_game("Failed to initialize allegro addons");
+
+    if (!al_init_font_addon())
+        abort_game("Failed to initialize allegro fonts");
+
+    if (!al_init_ttf_addon())
+        abort_game("Failed to initialize allegro TTF");
+
+    fonts[0] = al_load_ttf_font("fonts/terminator_real_nfi.ttf",20,0 );
 
     al_register_event_source(event_queue, al_get_mouse_event_source());
     al_register_event_source(event_queue, al_get_keyboard_event_source());
