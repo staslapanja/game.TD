@@ -139,7 +139,7 @@ struct tower_t* t_remove_ll_item(struct tower_t *head,struct tower_t *a)
     return head;
 }
 
-struct tower_t* create_tower(int x, int y, float angle, float damage, int level, float range)
+struct tower_t* create_tower(int x, int y, float angle, float damage, int level, float range, int price)
 {
     struct tower_t *a = (struct tower_t*)malloc(sizeof(struct tower_t));
     a->position.x = x;
@@ -149,6 +149,7 @@ struct tower_t* create_tower(int x, int y, float angle, float damage, int level,
     a->fire_active = false;
     a->level = level;
     a->range = range;
+    a->price = price;
     a->target = NULL;
     a->prev = NULL;
     a->next = NULL;
@@ -158,7 +159,7 @@ struct tower_t* create_tower(int x, int y, float angle, float damage, int level,
 
 //FLOATING TEXT
 
-struct float_text_t* create_float_text(int x, int y, int move_per_tick, int timeout, char text[])
+struct float_text_t* create_float_text(int x, int y, int move_per_tick, int timeout, char text[], ALLEGRO_COLOR colour)
 {
     struct float_text_t *a = (struct float_text_t*)malloc(sizeof(struct float_text_t));
     a->x = x;
@@ -166,6 +167,7 @@ struct float_text_t* create_float_text(int x, int y, int move_per_tick, int time
     a->move_per_tick = move_per_tick;
     a->timeout = timeout;
     strcpy(a->text, text);
+    a->colour = colour;
     a->prev = NULL;
     a->next = NULL;
 

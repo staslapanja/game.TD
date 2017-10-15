@@ -262,7 +262,7 @@ void draw_cursor_rect(void)
     al_draw_rectangle(x + offset + 1,y + offset + 1, x + tile_size-2 + offset,y + tile_size-2 + offset, cursor_color0, 3);
     al_draw_rectangle(x + offset + 1,y + offset + 1, x + tile_size-2 + offset,y + tile_size-2 + offset, cursor_color1, 1);
     if(globals.game_state.tower0_place == true){
-        if (build_check()){
+        if (place_check() && price_check()){
             //draw tower base
             al_draw_tinted_scaled_bitmap(globals.objects[OBJ_TOWER], al_map_rgba_f(0.5, 1, 0.5, 0.5), 0, 0, 64, 64, x , y, tile_size, tile_size, 0x0);
             //draw tower cannon
@@ -299,8 +299,9 @@ void draw_top_bar(void)
 
     //text
     ALLEGRO_COLOR text_color0 = al_map_rgb(176,196,222); //light steel blue
-    al_draw_textf(fonts[0] , text_color0, x0 + 8, y0 + 8, ALLEGRO_ALIGN_LEFT, "Credits: %6.1f",globals.game_state.credits);
-    al_draw_textf(fonts[0] , text_color0, x0 + 350, y0 + 8, ALLEGRO_ALIGN_LEFT, "Energy: %4.f/%4.f",globals.game_state.energy_produced, globals.game_state.energy_required);
+    al_draw_textf(fonts[0] , text_color0, x0 + 10, y0 + 10, ALLEGRO_ALIGN_LEFT, "Credits: %6.1f",globals.game_state.credits);
+    al_draw_textf(fonts[0] , text_color0, x0 + 300, y0 + 10, ALLEGRO_ALIGN_LEFT, "Energy: %4.f/%4.f",globals.game_state.energy_produced, globals.game_state.energy_required);
+    al_draw_textf(fonts[0] , text_color0, x0 + 600, y0 + 10, ALLEGRO_ALIGN_LEFT, "Next: %3.1f",(float)globals.game_state.count_down/GAME_UPADTES_PER_SEC);
 }
 
 void draw_build_menu(void)
@@ -476,8 +477,7 @@ void draw_floating_text(void)
         x = globals.game_state.screen_w/2 - globals.game_state.screen_center.x + (cursor->x * mult);
         y = globals.game_state.screen_h/2 - globals.game_state.screen_center.y + (cursor->y * mult);
 
-        ALLEGRO_COLOR text_color = al_map_rgb(218,165,32); //golden rod
-        al_draw_text(fonts[0] , text_color, x, y, ALLEGRO_ALIGN_LEFT, cursor->text);
+        al_draw_text(fonts[0] , cursor->colour, x, y, ALLEGRO_ALIGN_LEFT, cursor->text);
         cursor = cursor->next;
     }
 }

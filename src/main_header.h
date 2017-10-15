@@ -10,6 +10,8 @@
 #include <math.h>
 #include <stdlib.h>
 
+#define GAME_UPADTES_PER_SEC 60
+
 #define TILE_NUM    9
 
 #define TILE_BLANK  0
@@ -65,6 +67,7 @@ struct game_state_t{
     float credits;
     float energy_produced;
     float energy_required;
+    int count_down;
 };
 
 struct keys_t{
@@ -123,9 +126,15 @@ struct tower_t{
     bool fire_active;
     int level;
     float range;
+    int price;
     struct enemy_t *target;
     struct tower_t *prev;
     struct tower_t *next;
+};
+
+struct tower_list_t{
+    struct tower_t *tower0;
+    struct tower_t *tower1;
 };
 
 struct building_t{
@@ -155,6 +164,7 @@ struct float_text_t{
     int move_per_tick;
     int timeout;
     char text[20];
+    ALLEGRO_COLOR colour;
     struct float_text_t *prev;
     struct float_text_t *next;
 };
@@ -168,6 +178,7 @@ struct globals_t {
     int enemy_num;
     bool enemy_spawn;
     struct tower_t *towers;
+    struct tower_list_t *tower_list;
     struct building_t *buildings;
     struct structures_t *structures;
     ALLEGRO_BITMAP *objects[OBJ_NUM];
@@ -175,7 +186,6 @@ struct globals_t {
     struct path_t *rail;
     struct xy_t rail_start;
     struct xy_t rail_finish;
-    bool place_object_active;
     struct float_text_t *float_text;
 
 };

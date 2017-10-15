@@ -26,7 +26,7 @@ void init(void)
     if (!al_install_mouse())
         abort_game("Failed to install mouse");
 
-    timer = al_create_timer(1.0 / 60);
+    timer = al_create_timer(1.0 / GAME_UPADTES_PER_SEC);
     if (!timer)
         abort_game("Failed to create timer");
 
@@ -48,7 +48,7 @@ void init(void)
     if (!al_init_ttf_addon())
         abort_game("Failed to initialize allegro TTF");
 
-    fonts[0] = al_load_ttf_font("fonts/terminator_real_nfi.ttf",20,0 );
+    fonts[0] = al_load_ttf_font("fonts/terminator_real_nfi.ttf",16,0 );
 
     al_register_event_source(event_queue, al_get_mouse_event_source());
     al_register_event_source(event_queue, al_get_keyboard_event_source());

@@ -49,20 +49,21 @@ void init_globals(void)
     globals.game_state.credits = 100;
     globals.game_state.energy_produced = 0;
     globals.game_state.energy_required = 0;
+    globals.game_state.count_down = 10 * GAME_UPADTES_PER_SEC;
     //object pointers
     globals.enemy = NULL;
     globals.enemy_num = 0;
     globals.enemy_spawn = false;
-    globals.towers = NULL;
-    globals.buildings = NULL;
-    globals.structures = NULL;
+    globals.towers = NULL;      //linked list
+    globals.tower_list = NULL;
+    globals.buildings = NULL;   //linked list
+    globals.structures = NULL;  //map list
     globals.river = NULL;
     globals.rail = NULL;
     globals.rail_start.x = 0;
     globals.rail_start.y = 0;
     globals.rail_finish.x = 0;
     globals.rail_finish.y = 0;
-    globals.place_object_active = false;
     globals.float_text = NULL;
 }
 
@@ -208,6 +209,16 @@ void create_rail(void)
 
 }
 
+void create_tower_list(void)
+{
+    globals.tower_list = (struct tower_list_t*)malloc(sizeof(struct tower_list_t));
+    struct tower_t *temp;
+    temp = create_tower(0, 0, 0, 1, 1, 256, 100);
+    globals.tower_list->tower0 = temp;
+    temp = create_tower(0, 0, 0, 5, 1, 384, 1000);
+    globals.tower_list->tower1 = temp;
+}
+
 void keyboard_actions(void)
 {
     //zoom control
@@ -296,21 +307,10 @@ void mouse_actions(void)
             }
         }
 
-        //if left mouse button release
-        if ((globals.game_state.tower0_place == true) ||
-            (globals.game_state.house0_place == true) ||
-            (globals.game_state.tower1_place == true) ||
-            (globals.game_state.house1_place == true)){
-            if (globals.mouse.lb == false){
-                globals.place_object_active = true;
-            }
-        }
-
-        if ((globals.place_object_active == true) && build_check()){
+        if (place_check() && mouse_inside_map_screen() && price_check()){
             if (globals.mouse.lb == true){
                 //place object on map
                 place_object_on_map();
-                globals.place_object_active = false;
             }
         }
     } else {
@@ -318,7 +318,6 @@ void mouse_actions(void)
         globals.game_state.tower1_place = false;
         globals.game_state.house0_place = false;
         globals.game_state.house1_place = false;
-        globals.place_object_active = false;
     }
 
     //reset building actions with right click
@@ -327,7 +326,6 @@ void mouse_actions(void)
         globals.game_state.tower1_place = false;
         globals.game_state.house0_place = false;
         globals.game_state.house1_place = false;
-        globals.place_object_active = false;
     }
 
 }
@@ -341,6 +339,28 @@ bool mouse_menu_check(float x0, float y0, float x1, float y1)
                 return true;
         }
         return false;
+}
+
+bool mouse_inside_map_screen(void)
+{
+    int mouse_x, mouse_y;
+    mouse_x = globals.mouse.x;
+    mouse_y = globals.mouse.y;
+
+    int screen_w, screen_h, top_bar_h;
+    screen_w = globals.game_state.screen_w;
+    screen_h = globals.game_state.screen_h;
+    top_bar_h = globals.game_state.top_bar_h;
+
+    bool check_x,check_y;
+    check_x = (mouse_x >= 0) && (mouse_x < screen_w);   //screen_w already includes side menu offset
+    check_y = (mouse_y >= top_bar_h) && (mouse_y < screen_h);
+
+    if (check_x && check_y){
+        return true;
+    } else {
+        return false;
+    }
 }
 
 void mouse_to_grid(void)
@@ -416,7 +436,26 @@ void get_cursor_info(void)
     }
 }
 
-bool build_check(void)
+bool price_check(void)
+{
+    float credits = globals.game_state.credits;
+
+    if (globals.game_state.tower0_place == true){
+        if (credits >= globals.tower_list->tower0->price){
+            return true;
+        }
+    }
+
+    if (globals.game_state.tower1_place == true){
+        if (credits >= globals.tower_list->tower1->price){
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool place_check(void)
 {
     int tile_type;
     bool place_tower, place_house;
@@ -480,9 +519,21 @@ void place_object_on_map(void)
     if (globals.game_state.tower0_place == true){
         struct tower_t *temp = NULL;
         //int x, int y, float angle, float damage, int level, float range
-        temp = create_tower(x, y, 0, 1, 1, 256);
+        temp = create_tower(0, 0, 0, 0, 0, 0, 0);
+        //copy tower template to newly allocated memory
+        memcpy(temp, globals.tower_list->tower0, sizeof (struct tower_t));
+        temp->position.x = x;
+        temp->position.y = y;
         globals.towers = t_append_ll_item(globals.towers,temp);
         globals.structures[globals.mouse.tile_y * globals.tiles.tile_w + globals.mouse.tile_x].t = temp;
+        //subtract credits and add a floating text
+        globals.game_state.credits = globals.game_state.credits - temp->price;
+        char text_holder[20];
+        struct float_text_t *temp_ft;
+        sprintf(text_holder, "-$%d",temp->price);
+        ALLEGRO_COLOR text_color = al_map_rgb(255,69,0); //orange red
+        temp_ft = create_float_text(x, y, 1, 60, text_holder, text_color);
+        globals.float_text = ft_append_ll_item(globals.float_text,temp_ft);
     }
     if (globals.game_state.house0_place == true){
         //
@@ -541,12 +592,13 @@ void update_enemy(void)
 {
     int tile_w = globals.tiles.tile_w;
     //create enemy
-    if (globals.enemy_spawn == true) {
+    if ((globals.enemy_spawn == true) || (globals.game_state.count_down <= 0)){
         struct enemy_t *temp = NULL;
         temp = create_enemy(globals.rail_start.x * 64, globals.rail_start.y * 64, globals.rail_start.y * tile_w + globals.rail_start.x, 2, 100,10);
         globals.enemy = append_ll_item(globals.enemy,temp);
         globals.enemy_num++;
         globals.enemy_spawn = false;
+        globals.game_state.count_down = 10 * GAME_UPADTES_PER_SEC;
     }
     //change position
     struct enemy_t *cursor = globals.enemy;
@@ -565,7 +617,8 @@ void update_enemy(void)
             char text_holder[20];
             struct float_text_t *temp_ft;
             sprintf(text_holder, "$%d",cursor->credits);
-            temp_ft = create_float_text(cursor->position.x, cursor->position.y, 1, 60, text_holder);
+            ALLEGRO_COLOR text_color = al_map_rgb(218,165,32); //golden rod
+            temp_ft = create_float_text(cursor->position.x, cursor->position.y, 1, 60, text_holder, text_color);
             globals.float_text = ft_append_ll_item(globals.float_text,temp_ft);
             globals.game_state.credits += cursor->credits;
             //remove enemy
@@ -701,6 +754,11 @@ void update_float_text(void)
     }
 }
 
+void update_timers(void)
+{
+    globals.game_state.count_down -= 1;
+}
+
 void init_logic(void)
 {
 
@@ -710,6 +768,8 @@ void init_logic(void)
     create_map();
     //create_river();
     create_rail();
+
+    create_tower_list();
 
     move_screen(globals.tiles.map_center);
 
@@ -729,6 +789,7 @@ void update_logic(void)
 {
     keyboard_actions();
     mouse_actions();
+    update_timers();
     mouse_to_grid();
     get_cursor_info();
     bound_screen();

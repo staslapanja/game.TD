@@ -12,9 +12,9 @@ struct enemy_t* create_enemy(int x, int y, int path_start, float speed, float he
 struct tower_t* t_append_ll_item(struct tower_t *head,struct tower_t *a);
 struct tower_t* t_prepend_ll_item(struct tower_t *head,struct tower_t *a);
 struct tower_t* t_remove_ll_item(struct tower_t *head,struct tower_t *a);
-struct tower_t* create_tower(int x, int y, float angle, float damage, int level, float range);
+struct tower_t* create_tower(int x, int y, float angle, float damage, int level, float range, int price);
 
-struct float_text_t* create_float_text(int x, int y, int move_per_tick, int timeout, char text[]);
+struct float_text_t* create_float_text(int x, int y, int move_per_tick, int timeout, char text[], ALLEGRO_COLOR colour);
 struct float_text_t* ft_append_ll_item(struct float_text_t *head,struct float_text_t *a);
 struct float_text_t* ft_remove_ll_item(struct float_text_t *head,struct float_text_t *a);
 
