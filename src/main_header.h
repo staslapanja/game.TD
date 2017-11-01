@@ -32,6 +32,10 @@
 
 #define FONTS_NUM   1
 
+#define LLIST_ENEMY 0
+#define LLIST_TOWER 1
+#define LLIST_FLOAT_TEXT 2
+
 extern ALLEGRO_EVENT_QUEUE* event_queue;
 extern ALLEGRO_EVENT event;
 extern ALLEGRO_TIMER* timer;
@@ -57,6 +61,7 @@ struct game_state_t{
     bool house1_en;
     bool house1_place;
     int zoom;
+    float zoom_mult;
     struct xy_t screen_center;
     float screen_step;
     int screen_w;
@@ -107,18 +112,24 @@ struct tiles_t {
     struct xy_t map_center;
 };
 
+struct llist_t {
+    void *ptr;
+    void *prev;
+    void *next;
+};
+
 struct enemy_t{
+    int ll_id;
     struct xy_t position;
     int path_num;
     float speed;
     float max_health;
     float health;
     int credits;
-    struct enemy_t *prev;
-    struct enemy_t *next;
 };
 
 struct tower_t{
+    int ll_id;
     struct xy_t position;
     float angle;
     float damage;
@@ -127,8 +138,6 @@ struct tower_t{
     float range;
     int price;
     struct enemy_t *target;
-    struct tower_t *prev;
-    struct tower_t *next;
 };
 
 struct tower_list_t{
@@ -158,14 +167,13 @@ struct path_t{
 };
 
 struct float_text_t{
+    int ll_id;
     int x;
     int y;
     int move_per_tick;
     int timeout;
     char text[20];
     ALLEGRO_COLOR colour;
-    struct float_text_t *prev;
-    struct float_text_t *next;
 };
 
 struct globals_t {
@@ -173,10 +181,10 @@ struct globals_t {
     struct mouse_t mouse;
     struct game_state_t game_state;
     struct tiles_t tiles;
-    struct enemy_t *enemy;
+    struct llist_t *enemy;
     int enemy_num;
     bool enemy_spawn;
-    struct tower_t *towers;
+    struct llist_t *towers;
     struct tower_list_t *tower_list;
     struct building_t *buildings;
     struct structures_t *structures;
@@ -185,7 +193,7 @@ struct globals_t {
     struct path_t *rail;
     struct xy_t rail_start;
     struct xy_t rail_finish;
-    struct float_text_t *float_text;
+    struct llist_t *float_text;
 
 };
 

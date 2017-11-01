@@ -85,7 +85,7 @@ void shutdown(void)
     }
     //towers
     while(globals.towers != NULL){
-        globals.towers = t_remove_ll_item(globals.towers,globals.towers);
+        globals.towers = remove_ll_item(globals.towers,globals.towers);
     }
     //buildings
 

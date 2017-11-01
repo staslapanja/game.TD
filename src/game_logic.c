@@ -39,6 +39,7 @@ void init_globals(void)
     globals.game_state.house1_en = false;
     globals.game_state.house1_place = false;
     globals.game_state.zoom = 1;
+    globals.game_state.zoom_mult = 1.0f;
     globals.game_state.screen_center.x = 0;
     globals.game_state.screen_center.y = 0;
     globals.game_state.screen_step = 8;
@@ -524,7 +525,7 @@ void place_object_on_map(void)
         memcpy(temp, globals.tower_list->tower0, sizeof (struct tower_t));
         temp->position.x = x;
         temp->position.y = y;
-        globals.towers = t_append_ll_item(globals.towers,temp);
+        globals.towers = append_ll_item(globals.towers,temp);
         globals.structures[globals.mouse.tile_y * globals.tiles.tile_w + globals.mouse.tile_x].t = temp;
         //subtract credits and add a floating text
         globals.game_state.credits = globals.game_state.credits - temp->price;
@@ -533,7 +534,7 @@ void place_object_on_map(void)
         sprintf(text_holder, "-$%d",temp->price);
         ALLEGRO_COLOR text_color = al_map_rgb(255,69,0); //orange red
         temp_ft = create_float_text(x, y, 1, 60, text_holder, text_color);
-        globals.float_text = ft_append_ll_item(globals.float_text,temp_ft);
+        globals.float_text = append_ll_item(globals.float_text,temp_ft);
     }
     if (globals.game_state.house0_place == true){
         //
@@ -551,12 +552,15 @@ void set_zoom_tile_size(void)
     switch(globals.game_state.zoom){
         case 0:
             globals.tiles.tile_size = 32;
+            globals.game_state.zoom_mult = 0.5f;
             break;
         case 1:
             globals.tiles.tile_size = 64;
+            globals.game_state.zoom_mult = 1.0f;
             break;
         case 2:
             globals.tiles.tile_size = 128;
+            globals.game_state.zoom_mult = 2.0f;
             break;
         default:
             globals.tiles.tile_size = 32;
@@ -601,36 +605,40 @@ void update_enemy(void)
         globals.game_state.count_down = 10 * GAME_UPADTES_PER_SEC;
     }
     //change position
-    struct enemy_t *cursor = globals.enemy;
+    struct llist_t *cursor = globals.enemy;
+    struct enemy_t *enemy;
     while(cursor != NULL){
+        enemy = cursor->ptr;
         //if enemy destroyed, remove it from all the target lists
-        if (cursor->health <= 0){
+        if (enemy->health <= 0){
             //remove from tower list
-            struct tower_t *t_cursor = globals.towers;
+            struct llist_t *t_cursor = globals.towers;
+            struct tower_t *tower;
             while(t_cursor != NULL){
-                if (t_cursor->target == cursor){
-                    t_cursor->target = NULL;
+                tower = t_cursor->ptr;
+                if (tower->target == enemy){
+                    tower->target = NULL;
                 }
                 t_cursor = t_cursor->next;
             }
             //add floating text for credits reward and update credits
             char text_holder[20];
             struct float_text_t *temp_ft;
-            sprintf(text_holder, "$%d",cursor->credits);
+            sprintf(text_holder, "$%d",enemy->credits);
             ALLEGRO_COLOR text_color = al_map_rgb(218,165,32); //golden rod
-            temp_ft = create_float_text(cursor->position.x, cursor->position.y, 1, 60, text_holder, text_color);
-            globals.float_text = ft_append_ll_item(globals.float_text,temp_ft);
-            globals.game_state.credits += cursor->credits;
+            temp_ft = create_float_text(enemy->position.x, enemy->position.y, 1, 60, text_holder, text_color);
+            globals.float_text = append_ll_item(globals.float_text,temp_ft);
+            globals.game_state.credits += enemy->credits;
             //remove enemy
-            struct enemy_t *temp = cursor;
+            struct llist_t *temp = cursor;
             cursor = cursor->next;
             globals.enemy = remove_ll_item(globals.enemy,temp);
             globals.enemy_num--;
         //move the enemy
         } else {
-            update_enemy_path(cursor);
-            if(check_enemy_finish(cursor)){
-                struct enemy_t *temp = cursor;
+            update_enemy_path(enemy);
+            if(check_enemy_finish(enemy)){
+                struct llist_t *temp = cursor;
                 cursor = cursor->next;
                 globals.enemy = remove_ll_item(globals.enemy,temp);
                 globals.enemy_num--;
@@ -694,44 +702,48 @@ bool check_enemy_finish(struct enemy_t *a)
 void update_towers(void)
 {
     //seek nearest enemy in range
-    struct tower_t *t_cursor = globals.towers;
-    struct enemy_t *e_cursor;
+    struct llist_t *t_cursor = globals.towers;
+    struct tower_t *tower;
+    struct llist_t *e_cursor;
+    struct enemy_t *enemy;
     float t_x,t_y,e_x,e_y,dx,dy;
 
     while(t_cursor != NULL){
-        t_x = t_cursor->position.x;
-        t_y = t_cursor->position.y;
+        tower = t_cursor->ptr;
+        t_x = tower->position.x;
+        t_y = tower->position.y;
         //if no target, clear fire active
-        if (t_cursor->target == NULL){
-            t_cursor->fire_active = false;
+        if (tower->target == NULL){
+            tower->fire_active = false;
         }
         //check all enemies
         e_cursor = globals.enemy;
         while(e_cursor != NULL){
-            e_x = e_cursor->position.x;
-            e_y = e_cursor->position.y;
+            enemy = e_cursor->ptr;
+            e_x = enemy->position.x;
+            e_y = enemy->position.y;
             dx = e_x-t_x;
             dy = e_y-t_y;
-            if ((sqrt(dx*dx + dy*dy)) <= t_cursor->range){
-                t_cursor->target = e_cursor;
-                t_cursor->fire_active = true;
+            if ((sqrt(dx*dx + dy*dy)) <= tower->range){
+                tower->target = enemy;
+                tower->fire_active = true;
                 //calculate as if 0 is north
                 if (dy == 0){
-                    t_cursor->angle = (dx/abs(dx)) * ALLEGRO_PI/2;
+                    tower->angle = (dx/abs(dx)) * ALLEGRO_PI/2;
                 } else {
                     if (dy < 0){
-                        t_cursor->angle = atan(dx/abs(dy));
+                        tower->angle = atan(dx/abs(dy));
                     } else {
                         //if dx < 0 the rotation is PI + atan = - (PI - atan)
-                        t_cursor->angle = ALLEGRO_PI - atan(dx/abs(dy));
+                        tower->angle = ALLEGRO_PI - atan(dx/abs(dy));
                     }
 
                 }
-                e_cursor->health -= t_cursor->damage;
+                enemy->health -= tower->damage;
                 e_cursor = NULL;
             } else {
-                t_cursor->fire_active = false;
-                t_cursor->target = NULL;
+                tower->fire_active = false;
+                tower->target = NULL;
                 e_cursor = e_cursor->next;
             }
         }
@@ -741,14 +753,16 @@ void update_towers(void)
 
 void update_float_text(void)
 {
-    struct float_text_t *cursor = globals.float_text;
+    struct llist_t *cursor = globals.float_text;
+    struct float_text_t *float_text;
     while(cursor != NULL){
-        if (cursor->timeout <= 0){
+        float_text = cursor->ptr;
+        if (float_text->timeout <= 0){
             struct float_text_t *temp = cursor;
-            globals.float_text = ft_remove_ll_item(globals.float_text,temp);
+            globals.float_text = remove_ll_item(globals.float_text,temp);
         } else {
-            cursor->y = cursor->y - cursor->move_per_tick;
-            cursor->timeout = cursor->timeout - 1;
+            float_text->y = float_text->y - float_text->move_per_tick;
+            float_text->timeout = float_text->timeout - 1;
         }
         cursor = cursor->next;
     }
