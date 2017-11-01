@@ -89,10 +89,16 @@ void shutdown(void)
     }
     //buildings
 
+    //floating text
+    while(globals.float_text != NULL){
+        globals.float_text = remove_ll_item(globals.float_text,globals.float_text);
+    }
+
     //free other memory structures
     free(globals.tiles.p);
     free(globals.structures);
     free(globals.rail);
+    free(globals.tower_list);
 }
 
 void game_loop(void)
