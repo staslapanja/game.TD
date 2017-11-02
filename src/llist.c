@@ -57,9 +57,11 @@ void free_llist_item(void *a)
     struct tower_t *tower;
     struct float_text_t *float_text;
     //first item in any llist struct is int id!
-    int id;
-    //cast should not be a problem because only low value integers will be assigned
-    id = (int)a;
+    int *id_ptr,id;
+    //void pointer to integer pointer
+    id_ptr = a;
+    //get integer value
+    id = *id_ptr;
     //determine struct from this id
     switch(id){
         case(LLIST_ENEMY):

@@ -758,7 +758,7 @@ void update_float_text(void)
     while(cursor != NULL){
         float_text = cursor->ptr;
         if (float_text->timeout <= 0){
-            struct float_text_t *temp = cursor;
+            struct llist_t *temp = cursor;
             globals.float_text = remove_ll_item(globals.float_text,temp);
         } else {
             float_text->y = float_text->y - float_text->move_per_tick;
