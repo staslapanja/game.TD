@@ -47,6 +47,7 @@ void create_tiles(void)
         al_draw_filled_rectangle(16, 0, 48, 64, al_map_rgb(105,105,105));//dim gray / dim grey
         al_draw_filled_rectangle(30, 0, 34, 64, al_map_rgb(75,0,130));//indigo
     }
+
     //TILE_RAIL_CORNER    6
     globals.tiles.tile[TILE_RAIL_CORNER] = al_load_bitmap("resources/rail_corner.png");
     if (globals.tiles.tile[TILE_RAIL_CORNER] == NULL) //fallback graphic
@@ -97,10 +98,44 @@ void create_game_objects(void)
     al_set_target_backbuffer(display);
 }
 
+void create_ui_items(void)
+{
+    //UI_BUILD_OK
+    globals.ui_items[UI_BUILD_OK]  = al_load_bitmap("resources/build_ok.png");
+    if (globals.ui_items[UI_BUILD_OK]  == NULL) //fallback graphic
+    {
+        globals.ui_items[UI_BUILD_OK] = al_create_bitmap(64, 64);
+        al_set_target_bitmap(globals.ui_items[UI_BUILD_OK]);
+        al_draw_filled_circle(32, 32, 16, al_map_rgba(0,255, 0, 255));
+    }
+
+    //UI_BUILD_BAD
+    globals.ui_items[UI_BUILD_BAD]  = al_load_bitmap("resources/build_bad.png");
+    if (globals.ui_items[UI_BUILD_BAD]  == NULL) //fallback graphic
+    {
+        globals.ui_items[UI_BUILD_BAD] = al_create_bitmap(64, 64);
+        al_set_target_bitmap(globals.ui_items[UI_BUILD_BAD]);
+        al_draw_filled_circle(32, 32, 16, al_map_rgba(255, 0, 0, 255));
+    }
+
+    //UI_TWR_RANGE
+    globals.ui_items[UI_TWR_RANGE] = al_load_bitmap("resources/range_ring.png");
+    if (globals.ui_items[UI_TWR_RANGE] == NULL) //fallback graphic
+    {
+        globals.ui_items[UI_TWR_RANGE] = al_create_bitmap(128, 128);
+        al_set_target_bitmap(globals.ui_items[UI_TWR_RANGE]);
+        al_draw_filled_circle(64, 64, 64, al_map_rgba(0,50,50, 16));
+    }
+
+    //reselect the display buffer
+    al_set_target_backbuffer(display);
+}
+
 void init_graphics(void)
 {
     create_tiles();
     create_game_objects();
+    create_ui_items();
 }
 
 void update_graphics(void)
@@ -268,24 +303,28 @@ void draw_cursor_rect(void)
     x = globals.mouse.grid_x;
     y = globals.mouse.grid_y;
 
-    int tile_size;
-    tile_size = globals.tiles.tile_size;
+    int tile_size = globals.tiles.tile_size;
+    //float mult = globals.game_state.zoom_mult;
 
     al_draw_rectangle(x + offset + 1,y + offset + 1, x + tile_size-2 + offset,y + tile_size-2 + offset, cursor_color0, 3);
     al_draw_rectangle(x + offset + 1,y + offset + 1, x + tile_size-2 + offset,y + tile_size-2 + offset, cursor_color1, 1);
     if(globals.game_state.tower0_place == true){
+        draw_tower_range(x, y, globals.tower_list->tower0->range);
         if (place_check() && price_check()){
-            //draw tower base
-            al_draw_tinted_scaled_bitmap(globals.objects[OBJ_TOWER], al_map_rgba_f(0.5, 1, 0.5, 0.5), 0, 0, 64, 64, x , y, tile_size, tile_size, 0x0);
-            //draw tower cannon
-            al_draw_tinted_scaled_bitmap(globals.objects[OBJ_TOWER_GUN],al_map_rgba_f(0.5, 1, 0.5, 0.5), 0, 0, 64, 64, x , y, tile_size, tile_size, 0x0);
+            //can be build on this tile
+            al_draw_tinted_scaled_bitmap(globals.ui_items[UI_BUILD_OK], al_map_rgba_f(1, 1, 1, 0.5), 0, 0, 64, 64, x , y, tile_size, tile_size, 0x0);
         } else {
-            //draw tower base
-            al_draw_tinted_scaled_bitmap(globals.objects[OBJ_TOWER], al_map_rgba_f(1, 0.5, 0.5, 0.5), 0, 0, 64, 64, x , y, tile_size, tile_size, 0x0);
-            //draw tower cannon
-            al_draw_tinted_scaled_bitmap(globals.objects[OBJ_TOWER_GUN],al_map_rgba_f(1, 0.5, 0.5, 0.5), 0, 0, 64, 64, x , y, tile_size, tile_size, 0x0);
+            //can not be build on this tile
+            al_draw_tinted_scaled_bitmap(globals.ui_items[UI_BUILD_BAD], al_map_rgba_f(1, 1, 1, 0.5), 0, 0, 64, 64, x , y, tile_size, tile_size, 0x0);
         }
     }
+}
+
+void draw_tower_range(float x, float y, float range){
+    float mult = globals.game_state.zoom_mult;
+    //draw the range circle, starting from the middle
+    al_draw_circle(x + (32*mult), y + (32*mult), (range * mult) - 1, al_map_rgba(70,130,180, 128),3);
+    al_draw_scaled_bitmap(globals.ui_items[UI_TWR_RANGE], 0, 0, 128, 128, x + (32 - range) * mult , y + (32 - range) * mult, 2 * range * mult, 2 * range * mult, 0x0);
 }
 
 void draw_top_bar(void)

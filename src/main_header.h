@@ -30,6 +30,12 @@
 #define OBJ_TOWER_GUN   2
 #define OBJ_BUILDING    3
 
+#define UI_NUM 3
+
+#define UI_BUILD_OK    0
+#define UI_BUILD_BAD   1
+#define UI_TWR_RANGE   2
+
 #define FONTS_NUM   1
 
 #define LLIST_ENEMY 0
@@ -189,6 +195,7 @@ struct globals_t {
     struct building_t *buildings;
     struct structures_t *structures;
     ALLEGRO_BITMAP *objects[OBJ_NUM];
+    ALLEGRO_BITMAP *ui_items[UI_NUM];
     struct path_t *river;
     struct path_t *rail;
     struct xy_t rail_start;

@@ -5,12 +5,14 @@
 
 void create_tiles(void);
 void create_game_objects(void);
+void create_ui_items(void);
 void init_graphics(void);
 void update_graphics(void);
 void draw_background(void);
 void draw_map(void);
 void draw_rail(void);
 void draw_cursor_rect(void);
+void draw_tower_range(float x, float y, float range);
 void draw_top_bar(void);
 void draw_build_menu(void);
 void draw_enemy(void);
