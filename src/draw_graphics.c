@@ -76,14 +76,22 @@ void create_game_objects(void)
         al_draw_filled_circle(32, 32, 16, al_map_rgba(127, 0, 127, 255));
     }
     //OBJ_TOWER
-    globals.objects[OBJ_TOWER] = al_create_bitmap(64, 64);
-    al_set_target_bitmap(globals.objects[OBJ_TOWER]);
-    al_draw_filled_rectangle(8, 8, 56, 56, al_map_rgba(119,136,153, 255));
+    globals.objects[OBJ_TOWER]  = al_load_bitmap("resources/tower_base.png");
+    if (globals.objects[OBJ_TOWER]  == NULL) //fallback graphic
+    {
+        globals.objects[OBJ_TOWER] = al_create_bitmap(64, 64);
+        al_set_target_bitmap(globals.objects[OBJ_TOWER]);
+        al_draw_filled_rectangle(8, 8, 56, 56, al_map_rgba(119,136,153, 255));
+    }
     //OBJ_TOWER_GUN
-    globals.objects[OBJ_TOWER_GUN] = al_create_bitmap(64, 64);
-    al_set_target_bitmap(globals.objects[OBJ_TOWER_GUN]);
-    al_draw_filled_circle(32, 32, 16, al_map_rgba(176,196,222, 255));
-    al_draw_line(32, 32, 32, 0, al_map_rgb(0, 0, 0), 4);
+    globals.objects[OBJ_TOWER_GUN]  = al_load_bitmap("resources/tower_gun.png");
+    if (globals.objects[OBJ_TOWER_GUN]  == NULL) //fallback graphic
+    {
+        globals.objects[OBJ_TOWER_GUN] = al_create_bitmap(64, 64);
+        al_set_target_bitmap(globals.objects[OBJ_TOWER_GUN]);
+        al_draw_filled_circle(32, 32, 16, al_map_rgba(176,196,222, 255));
+        al_draw_line(32, 32, 32, 0, al_map_rgb(0, 0, 0), 4);
+    }
 
     //reselect the display buffer
     al_set_target_backbuffer(display);
