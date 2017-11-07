@@ -77,6 +77,7 @@ void init_tiles(int w, int h)
     int i;
     for (i = 0; i < w * h; i++){
         globals.tiles.p[i] = TILE_BLANK;
+        globals.tiles.hill[i] = 0x0;
     }
     globals.tiles.tile_size = 64;
     globals.tiles.tile_w = w;
@@ -105,18 +106,6 @@ void init_structures(void)
 void move_screen(struct xy_t pos)
 {
     globals.game_state.screen_center = pos;
-}
-
-void create_map(void)
-{
-    int h,w,sel;
-
-    for (h = 0; h < globals.tiles.tile_h; h++){
-        for (w = 0; w < globals.tiles.tile_w; w++){
-            sel = ((rand()%3) > 0) ? TILE_LAND : TILE_HILL;
-            globals.tiles.p[h*globals.tiles.tile_w + w] = sel;
-        }
-    }
 }
 
 void create_river(void)
@@ -779,7 +768,7 @@ void init_logic(void)
     init_tiles(10,10);
     init_structures();
 
-    create_map();
+    generate_map();
     //create_river();
     create_rail();
 

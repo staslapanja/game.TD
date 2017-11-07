@@ -20,14 +20,10 @@ void create_tiles(void)
     }
 
     //TILE_HILL  2
-    globals.tiles.tile[TILE_HILL] = al_load_bitmap("resources/desert_tile_hill.png");
+    globals.tiles.tile[TILE_HILL] = al_load_bitmap("resources/hill_atlas.png");
     if (globals.tiles.tile[TILE_LAND] == NULL) //fallback graphic
     {
-        globals.tiles.tile[TILE_HILL] = al_create_bitmap(64, 64);
-        al_set_target_bitmap(globals.tiles.tile[TILE_HILL]);
-        al_clear_to_color(al_map_rgba(205, 133, 63, 255));
-        al_draw_filled_triangle(56, 56, 40, 16, 24, 56, al_map_rgb(139,69,19));
-        al_draw_filled_triangle( 8, 56, 40, 56, 24, 24, al_map_rgb(210,105,30));
+        abort_game("Resource hill_atlas.png not loaded!");
     }
     //TILE_WATER 3
     globals.tiles.tile[TILE_WATER] = al_create_bitmap(64, 64);
@@ -161,7 +157,7 @@ void draw_map(void)
 {
 
     int w,h;
-    int tile_type;
+    int tile_type, hill_type;
     float x,y;
 
     int tile_size;
@@ -173,28 +169,34 @@ void draw_map(void)
 
     for (h = 0; h < globals.tiles.tile_h; h++){
         for (w = 0; w < globals.tiles.tile_w; w++){
-            //add check to only raw the visible tiles instead of the whole map!!
+
             x = globals.game_state.screen_w/2 - globals.game_state.screen_center.x + w * tile_size;
             y = globals.game_state.screen_h/2 - globals.game_state.screen_center.y + h * tile_size;
-            tile_type = globals.tiles.p[h*globals.tiles.tile_w+w];
-            if (tile_type == TILE_BLANK){
-                al_draw_scaled_bitmap(globals.tiles.tile[TILE_BLANK], 0, 0, 64, 64, x , y , tile_size, tile_size,  0x0);
-            }
-            if (tile_type == TILE_LAND){
-                al_draw_scaled_bitmap(globals.tiles.tile[TILE_LAND], 0, 0, 64, 64, x , y , tile_size, tile_size, 0x0);
-            }
-            if (tile_type == TILE_HILL){
-                al_draw_scaled_bitmap(globals.tiles.tile[TILE_HILL], 0, 0, 64, 64, x , y , tile_size, tile_size, 0x0);
-            }
-            if (tile_type == TILE_WATER){
-                al_draw_scaled_bitmap(globals.tiles.tile[TILE_WATER], 0, 0, 64, 64, x , y , tile_size, tile_size, 0x0);
-            }
-            if (tile_type == TILE_GRASS){
-                al_draw_scaled_bitmap(globals.tiles.tile[TILE_GRASS], 0, 0, 64, 64, x , y , tile_size, tile_size, 0x0);
-            }
-            //draw grid around the tile if enabled
-            if (globals.game_state.grid_en == true){
-                al_draw_rectangle(x + offset,y + offset, x + tile_size-1 + offset,y + tile_size-1 + offset, grid_color, 1);
+
+            //check to only draw the visible tiles instead of the whole map
+            //change to calculation to remove unneeded checks!!!
+            if ((x > -tile_size) && (x < globals.game_state.screen_w + tile_size) && (y > -tile_size) && (y < globals.game_state.screen_h + tile_size)){
+                tile_type = globals.tiles.p[h*globals.tiles.tile_w+w];
+                hill_type = globals.tiles.hill[h*globals.tiles.tile_w+w];
+                if (tile_type == TILE_BLANK){
+                    al_draw_scaled_bitmap(globals.tiles.tile[TILE_BLANK], 0, 0, 64, 64, x , y , tile_size, tile_size,  0x0);
+                }
+                if (tile_type == TILE_LAND){
+                    al_draw_scaled_bitmap(globals.tiles.tile[TILE_LAND], 0, 0, 64, 64, x , y , tile_size, tile_size, 0x0);
+                }
+                if (hill_type){
+                    al_draw_scaled_bitmap(globals.tiles.tile[TILE_HILL], 0, 0, 64, 64, x , y , tile_size, tile_size, 0x0);
+                }
+                if (tile_type == TILE_WATER){
+                    al_draw_scaled_bitmap(globals.tiles.tile[TILE_WATER], 0, 0, 64, 64, x , y , tile_size, tile_size, 0x0);
+                }
+                if (tile_type == TILE_GRASS){
+                    al_draw_scaled_bitmap(globals.tiles.tile[TILE_GRASS], 0, 0, 64, 64, x , y , tile_size, tile_size, 0x0);
+                }
+                //draw grid around the tile if enabled
+                if (globals.game_state.grid_en == true){
+                    al_draw_rectangle(x + offset,y + offset, x + tile_size-1 + offset,y + tile_size-1 + offset, grid_color, 1);
+                }
             }
         }
     }

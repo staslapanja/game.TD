@@ -23,6 +23,24 @@
 #define TILE_RAIL_STRAIGHT  5
 #define TILE_RAIL_CORNER    6
 
+#define TILE_ID_HILL_0  0x2
+#define TILE_ID_HILL_1  0x4
+#define TILE_ID_HILL_2  0x8
+#define TILE_ID_HILL_3  0x10
+#define TILE_ID_HILL_4  0x20
+#define TILE_ID_HILL_5  0x40
+#define TILE_ID_HILL_6  0x80
+#define TILE_ID_HILL_7  0x100
+#define TILE_ID_HILL_8  0x200
+#define TILE_ID_HILL_9  0x400
+#define TILE_ID_HILL_10 0x800
+#define TILE_ID_HILL_11 0x1000
+#define TILE_ID_HILL_12 0x2000
+#define TILE_ID_HILL_13 0x4000
+#define TILE_ID_HILL_14 0x8000
+#define TILE_ID_HILL_15 0x10000
+#define TILE_ID_HILL_16 0x20000
+
 #define OBJ_NUM         4
 
 #define OBJ_ENEMY       0
@@ -48,6 +66,8 @@ extern ALLEGRO_TIMER* timer;
 extern ALLEGRO_DISPLAY* display;
 extern ALLEGRO_FONT *fonts[FONTS_NUM];
 extern struct globals_t globals;
+
+void abort_game(const char* message);
 
 struct xy_t {
     int x;
@@ -112,6 +132,7 @@ struct mouse_t{
 struct tiles_t {
     ALLEGRO_BITMAP *tile[TILE_NUM];
     int *p;
+    int *hill;
     int tile_size;
     int tile_w;
     int tile_h;
@@ -206,6 +227,7 @@ struct globals_t {
 
 #include "draw_graphics.h"
 #include "game_logic.h"
+#include "map_generator.h"
 #include "input.h"
 #include "llist.h"
 

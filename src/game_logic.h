@@ -7,7 +7,6 @@ void init_globals(void);
 void init_tiles(int w, int h);
 void init_structures(void);
 void move_screen(struct xy_t pos);
-void create_map(void);
 void create_river(void);
 void create_rail(void);
 void create_tower_list(void);
