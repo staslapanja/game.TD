@@ -10,6 +10,7 @@ void init_graphics(void);
 void update_graphics(void);
 void draw_background(void);
 void draw_map(void);
+void draw_hill(float x, float y, int hill_type, int tile_size);
 void draw_rail(void);
 void draw_cursor_rect(void);
 void draw_tower_range(float x, float y, float range);

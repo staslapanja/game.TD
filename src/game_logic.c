@@ -72,6 +72,7 @@ void init_tiles(int w, int h)
 {
     //tile pointer memory
     globals.tiles.p = (int*)malloc(sizeof(int) * w * h);
+    globals.tiles.hill = (int*)malloc(sizeof(int) * w * h);
 
     //set all entries to NULL
     int i;
