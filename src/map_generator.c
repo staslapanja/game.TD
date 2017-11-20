@@ -19,6 +19,10 @@ void generate_map(void)
             //randomly set tiles as hills
             sel = ((rand()%3) > 0) ? 0 : -1;
             hill[h*tile_w + w] = sel;
+
+//            if (sel == -1){
+//                globals.tiles.p[h*tile_w + w] = TILE_GRASS;
+//            }
         }
     }
 
@@ -27,6 +31,7 @@ void generate_map(void)
         for (w = 0; w < tile_w; w++){
             //if tile is a hill
             if (hill[h*tile_w + w] == -1){
+                globals.tiles.p[h*tile_w + w] = TILE_GRASS;
                 //check all 8 tiles around the selected tile
                 //tiles outside the map are a hill tile by default
                 if ((w > 0) && (h > 0)){
@@ -82,8 +87,23 @@ void generate_map(void)
                 if (!tile_S && !tile_N){
                     globals.tiles.hill[h*tile_w + w] = TILE_ID_HILL_2;
                 }
+
+                if (!tile_N && !tile_W && !tile_E && !tile_SW && !tile_SE && tile_S){
+                    globals.tiles.hill[h*tile_w + w] = TILE_ID_HILL_5;
+                }
+
                 if (!tile_N && !tile_W && !tile_E && !tile_S){
                     globals.tiles.hill[h*tile_w + w] = TILE_ID_HILL_7;
+                }
+
+                if (!tile_S && !tile_W && !tile_E && !tile_NW && !tile_NE && tile_N){
+                    globals.tiles.hill[h*tile_w + w] = TILE_ID_HILL_11;
+                }
+                if (!tile_N && !tile_W && !tile_S && !tile_SE && !tile_NE && tile_E){
+                    globals.tiles.hill[h*tile_w + w] = TILE_ID_HILL_15;
+                }
+                if (!tile_N && !tile_E && !tile_S && !tile_SW && !tile_NW && tile_W){
+                    globals.tiles.hill[h*tile_w + w] = TILE_ID_HILL_16;
                 }
             } else {
                 globals.tiles.hill[h*tile_w + w] = 0x0;

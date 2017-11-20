@@ -184,15 +184,17 @@ void draw_map(void)
                 if (tile_type == TILE_LAND){
                     al_draw_scaled_bitmap(globals.tiles.tile[TILE_LAND], 0, 0, 64, 64, x , y , tile_size, tile_size, 0x0);
                 }
-                if (hill_type){
-                    draw_hill(x, y, hill_type, tile_size);
-                }
                 if (tile_type == TILE_WATER){
                     al_draw_scaled_bitmap(globals.tiles.tile[TILE_WATER], 0, 0, 64, 64, x , y , tile_size, tile_size, 0x0);
                 }
                 if (tile_type == TILE_GRASS){
                     al_draw_scaled_bitmap(globals.tiles.tile[TILE_GRASS], 0, 0, 64, 64, x , y , tile_size, tile_size, 0x0);
                 }
+                //draw hill layer
+                if (hill_type){
+                    draw_hill(x, y, hill_type, tile_size);
+                }
+
                 //draw grid around the tile if enabled
                 if (globals.game_state.grid_en == true){
                     al_draw_rectangle(x + offset,y + offset, x + tile_size-1 + offset,y + tile_size-1 + offset, grid_color, 1);
