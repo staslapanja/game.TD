@@ -235,30 +235,31 @@ void draw_hill(float x, float y, int hill_type, int tile_size)
     if (hill_type & TILE_ID_HILL_8){
         al_draw_scaled_bitmap(globals.tiles.tile[TILE_HILL], 2 * 64, 1 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
     }
-    if (hill_type & TILE_ID_HILL_8){
+    if (hill_type & TILE_ID_HILL_9){
         al_draw_scaled_bitmap(globals.tiles.tile[TILE_HILL], 3 * 64, 1 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
     }
-    if (hill_type & TILE_ID_HILL_9){
+    if (hill_type & TILE_ID_HILL_10){
         al_draw_scaled_bitmap(globals.tiles.tile[TILE_HILL], 4 * 64, 1 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
     }
-    if (hill_type & TILE_ID_HILL_10){
+    if (hill_type & TILE_ID_HILL_11){
         al_draw_scaled_bitmap(globals.tiles.tile[TILE_HILL], 5 * 64, 1 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
     }
-    if (hill_type & TILE_ID_HILL_11){
+    if (hill_type & TILE_ID_HILL_12){
         al_draw_scaled_bitmap(globals.tiles.tile[TILE_HILL], 0 * 64, 2 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
     }
-    if (hill_type & TILE_ID_HILL_12){
+    if (hill_type & TILE_ID_HILL_13){
         al_draw_scaled_bitmap(globals.tiles.tile[TILE_HILL], 1 * 64, 2 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
     }
-    if (hill_type & TILE_ID_HILL_13){
+    if (hill_type & TILE_ID_HILL_14){
         al_draw_scaled_bitmap(globals.tiles.tile[TILE_HILL], 2 * 64, 2 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
     }
-    if (hill_type & TILE_ID_HILL_14){
+    if (hill_type & TILE_ID_HILL_15){
         al_draw_scaled_bitmap(globals.tiles.tile[TILE_HILL], 3 * 64, 2 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
     }
-    if (hill_type & TILE_ID_HILL_15){
+    if (hill_type & TILE_ID_HILL_16){
         al_draw_scaled_bitmap(globals.tiles.tile[TILE_HILL], 4 * 64, 2 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
     }
+
 }
 
 void draw_rail(void)

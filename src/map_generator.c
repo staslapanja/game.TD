@@ -50,7 +50,7 @@ void generate_map(void)
                     tile_NE = true;
                 }
                 if (w > 0){
-                    tile_W = (hill[h*tile_w + w] == -1);
+                    tile_W = (hill[h*tile_w + (w-1)] == -1);
                 } else {
                     tile_W = true;
                 }
@@ -105,6 +105,9 @@ void generate_map(void)
                 if (!tile_N && !tile_E && !tile_S && !tile_SW && !tile_NW && tile_W){
                     globals.tiles.hill[h*tile_w + w] = TILE_ID_HILL_16;
                 }
+
+                //globals.tiles.hill[h*tile_w + w] = TILE_ID_HILL_7;
+
             } else {
                 globals.tiles.hill[h*tile_w + w] = 0x0;
 
