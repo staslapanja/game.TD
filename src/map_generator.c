@@ -20,9 +20,6 @@ void generate_map(void)
             sel = ((rand()%3) > 0) ? 0 : -1;
             hill[h*tile_w + w] = sel;
 
-//            if (sel == -1){
-//                globals.tiles.p[h*tile_w + w] = TILE_GRASS;
-//            }
         }
     }
 
@@ -31,7 +28,6 @@ void generate_map(void)
         for (w = 0; w < tile_w; w++){
             //if tile is a hill
             if (hill[h*tile_w + w] == -1){
-                globals.tiles.p[h*tile_w + w] = TILE_GRASS;
                 //check all 8 tiles around the selected tile
                 //tiles outside the map are a hill tile by default
                 if ((w > 0) && (h > 0)){
@@ -75,38 +71,60 @@ void generate_map(void)
                     tile_SE = true;
                 }
                 //select correct hill sprite
-                if ( tile_W &&  tile_N &&  tile_E &&  tile_S){
+                if ( tile_W &&  tile_N &&  tile_E && tile_S && tile_NE && tile_NW && tile_SE && tile_SW){
                     globals.tiles.hill[h*tile_w + w] = 0x0;
                 }
                 if (!tile_W && !tile_N &&  tile_E &&  tile_S){
-                    globals.tiles.hill[h*tile_w + w] = TILE_ID_HILL_0;
+                    globals.tiles.hill[h*tile_w + w] |= TILE_ID_HILL_0;
                 }
                 if (tile_W && tile_E && !tile_N){
-                    globals.tiles.hill[h*tile_w + w] = TILE_ID_HILL_1;
+                    globals.tiles.hill[h*tile_w + w] |= TILE_ID_HILL_1;
                 }
-                if (!tile_S && !tile_N){
-                    globals.tiles.hill[h*tile_w + w] = TILE_ID_HILL_2;
+                if (!tile_E && !tile_N && tile_S && tile_W){
+                    globals.tiles.hill[h*tile_w + w] |= TILE_ID_HILL_2;
                 }
-
-                if (!tile_N && !tile_W && !tile_E && !tile_SW && !tile_SE && tile_S){
-                    globals.tiles.hill[h*tile_w + w] = TILE_ID_HILL_5;
+                if (tile_E && tile_S && !tile_SE){
+                    globals.tiles.hill[h*tile_w + w] |= TILE_ID_HILL_3;
                 }
-
+                if (tile_W && tile_S && !tile_SW){
+                    globals.tiles.hill[h*tile_w + w] |= TILE_ID_HILL_4;
+                }
+                if (!tile_N && !tile_W && !tile_E && tile_S){
+                    globals.tiles.hill[h*tile_w + w] |= TILE_ID_HILL_5;
+                }
+                if (!tile_W && tile_S && tile_N){
+                    globals.tiles.hill[h*tile_w + w] |= TILE_ID_HILL_6;
+                }
                 if (!tile_N && !tile_W && !tile_E && !tile_S){
-                    globals.tiles.hill[h*tile_w + w] = TILE_ID_HILL_7;
+                    globals.tiles.hill[h*tile_w + w] |= TILE_ID_HILL_7;
                 }
-
-                if (!tile_S && !tile_W && !tile_E && !tile_NW && !tile_NE && tile_N){
-                    globals.tiles.hill[h*tile_w + w] = TILE_ID_HILL_11;
+                if (!tile_E && tile_S && tile_N){
+                    globals.tiles.hill[h*tile_w + w] |= TILE_ID_HILL_8;
                 }
-                if (!tile_N && !tile_W && !tile_S && !tile_SE && !tile_NE && tile_E){
-                    globals.tiles.hill[h*tile_w + w] = TILE_ID_HILL_15;
+                if (tile_E && tile_N && !tile_NE){
+                    globals.tiles.hill[h*tile_w + w] |= TILE_ID_HILL_9;
                 }
-                if (!tile_N && !tile_E && !tile_S && !tile_SW && !tile_NW && tile_W){
-                    globals.tiles.hill[h*tile_w + w] = TILE_ID_HILL_16;
+                if (tile_W && tile_N && !tile_NW){
+                    globals.tiles.hill[h*tile_w + w] |= TILE_ID_HILL_10;
                 }
-
-                //globals.tiles.hill[h*tile_w + w] = TILE_ID_HILL_7;
+                if (!tile_S && !tile_W && !tile_E && tile_N){
+                    globals.tiles.hill[h*tile_w + w] |= TILE_ID_HILL_11;
+                }
+                if (tile_E && tile_N && !tile_S && !tile_W){
+                    globals.tiles.hill[h*tile_w + w] |= TILE_ID_HILL_12;
+                }
+                if (tile_W && tile_E && !tile_S){
+                    globals.tiles.hill[h*tile_w + w] |= TILE_ID_HILL_13;
+                }
+                if (!tile_E && tile_N && !tile_S && tile_W){
+                    globals.tiles.hill[h*tile_w + w] |= TILE_ID_HILL_14;
+                }
+                if (!tile_N && !tile_W && !tile_S && tile_E){
+                    globals.tiles.hill[h*tile_w + w] |= TILE_ID_HILL_15;
+                }
+                if (!tile_N && !tile_E && !tile_S && tile_W){
+                    globals.tiles.hill[h*tile_w + w] |= TILE_ID_HILL_16;
+                }
 
             } else {
                 globals.tiles.hill[h*tile_w + w] = 0x0;

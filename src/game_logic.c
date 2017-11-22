@@ -23,6 +23,7 @@ void init_globals(void)
     globals.mouse.dx = 0;
     globals.mouse.dy = 0;
     globals.mouse.tile_info = 0;
+    globals.mouse.hill_info = 0;
     globals.mouse.is_rail = false;
     globals.mouse.is_river = false;
     globals.mouse.is_struct = false;
@@ -413,6 +414,8 @@ void get_cursor_info(void)
     mouse_y = globals.mouse.tile_y;
     //get tile info
     globals.mouse.tile_info = globals.tiles.p[mouse_y*globals.tiles.tile_w+mouse_x];
+    //get hill info
+    globals.mouse.hill_info = globals.tiles.hill[mouse_y*globals.tiles.tile_w+mouse_x];
     //check if on a rail
     globals.mouse.is_rail = globals.rail[mouse_y*globals.tiles.tile_w+mouse_x].is_set;
     //check if on a river
@@ -448,13 +451,14 @@ bool price_check(void)
 
 bool place_check(void)
 {
-    int tile_type;
+    int tile_type, hill_type;
     bool place_tower, place_house;
 
     place_tower = (globals.game_state.tower0_place == true) || (globals.game_state.tower1_place == true);
     place_house = (globals.game_state.house0_place == true) || (globals.game_state.house1_place == true);
 
     tile_type = globals.mouse.tile_info;
+    hill_type = globals.mouse.hill_info;
 
     if (globals.mouse.is_rail == true){
         return false;
@@ -471,18 +475,18 @@ bool place_check(void)
     if (tile_type == TILE_BLANK){
             return false;
     }
-    if (tile_type == TILE_LAND){
-        if (place_house || place_tower){
-            return true;
+    if (hill_type){
+        if (place_tower){
+            return false;
+        } else if (place_house){
+            return false;
         } else {
             return false;
         }
     }
-    if (tile_type == TILE_HILL){
-        if (place_tower){
+    if (tile_type == TILE_LAND){
+        if (place_house || place_tower){
             return true;
-        } else if (place_house){
-            return false;
         } else {
             return false;
         }
@@ -766,7 +770,7 @@ void update_timers(void)
 void init_logic(void)
 {
 
-    init_tiles(10,10);
+    init_tiles(16,16);
     init_structures();
 
     generate_map();
@@ -777,16 +781,6 @@ void init_logic(void)
 
     move_screen(globals.tiles.map_center);
 
-    //TEMP!!! for testing purposes
-//    struct tower_t *temp = NULL;
-//    temp = create_tower(64*2, 64*7, 0, 1, 1, 256);
-//    globals.towers = t_append_ll_item(globals.towers,temp);
-//    temp = create_tower(64*0, 64*7, 0, 1, 1, 256);
-//    globals.towers = t_append_ll_item(globals.towers,temp);
-//    temp = create_tower(64*5, 64*7, 0, 1, 1, 256);
-//    globals.towers = t_append_ll_item(globals.towers,temp);
-//    temp = create_tower(64*5, 64*9, 0, 1, 1, 256);
-//    globals.towers = t_append_ll_item(globals.towers,temp);
 }
 
 void update_logic(void)
