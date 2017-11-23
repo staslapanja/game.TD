@@ -124,6 +124,7 @@ struct mouse_t{
     int dy;
     int dz;
     int tile_info;
+    int hill_info;
     bool is_rail;
     bool is_river;
     bool is_struct;

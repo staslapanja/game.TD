@@ -184,21 +184,80 @@ void draw_map(void)
                 if (tile_type == TILE_LAND){
                     al_draw_scaled_bitmap(globals.tiles.tile[TILE_LAND], 0, 0, 64, 64, x , y , tile_size, tile_size, 0x0);
                 }
-                if (hill_type){
-                    al_draw_scaled_bitmap(globals.tiles.tile[TILE_HILL], 0, 0, 64, 64, x , y , tile_size, tile_size, 0x0);
-                }
                 if (tile_type == TILE_WATER){
                     al_draw_scaled_bitmap(globals.tiles.tile[TILE_WATER], 0, 0, 64, 64, x , y , tile_size, tile_size, 0x0);
                 }
                 if (tile_type == TILE_GRASS){
                     al_draw_scaled_bitmap(globals.tiles.tile[TILE_GRASS], 0, 0, 64, 64, x , y , tile_size, tile_size, 0x0);
                 }
+                //draw hill layer
+                if (hill_type){
+                    draw_hill(x, y, hill_type, tile_size);
+                }
+
                 //draw grid around the tile if enabled
                 if (globals.game_state.grid_en == true){
                     al_draw_rectangle(x + offset,y + offset, x + tile_size-1 + offset,y + tile_size-1 + offset, grid_color, 1);
                 }
             }
         }
+    }
+
+}
+
+void draw_hill(float x, float y, int hill_type, int tile_size)
+{
+
+    if (hill_type & TILE_ID_HILL_0){
+        al_draw_scaled_bitmap(globals.tiles.tile[TILE_HILL], 0 * 64, 0 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
+    }
+    if (hill_type & TILE_ID_HILL_1){
+        al_draw_scaled_bitmap(globals.tiles.tile[TILE_HILL], 1 * 64, 0 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
+    }
+    if (hill_type & TILE_ID_HILL_2){
+        al_draw_scaled_bitmap(globals.tiles.tile[TILE_HILL], 2 * 64, 0 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
+    }
+    if (hill_type & TILE_ID_HILL_3){
+        al_draw_scaled_bitmap(globals.tiles.tile[TILE_HILL], 3 * 64, 0 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
+    }
+    if (hill_type & TILE_ID_HILL_4){
+        al_draw_scaled_bitmap(globals.tiles.tile[TILE_HILL], 4 * 64, 0 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
+    }
+    if (hill_type & TILE_ID_HILL_5){
+        al_draw_scaled_bitmap(globals.tiles.tile[TILE_HILL], 5 * 64, 0 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
+    }
+    if (hill_type & TILE_ID_HILL_6){
+        al_draw_scaled_bitmap(globals.tiles.tile[TILE_HILL], 0 * 64, 1 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
+    }
+    if (hill_type & TILE_ID_HILL_7){
+        al_draw_scaled_bitmap(globals.tiles.tile[TILE_HILL], 1 * 64, 1 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
+    }
+    if (hill_type & TILE_ID_HILL_8){
+        al_draw_scaled_bitmap(globals.tiles.tile[TILE_HILL], 2 * 64, 1 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
+    }
+    if (hill_type & TILE_ID_HILL_9){
+        al_draw_scaled_bitmap(globals.tiles.tile[TILE_HILL], 3 * 64, 1 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
+    }
+    if (hill_type & TILE_ID_HILL_10){
+        al_draw_scaled_bitmap(globals.tiles.tile[TILE_HILL], 4 * 64, 1 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
+    }
+    if (hill_type & TILE_ID_HILL_11){
+        al_draw_scaled_bitmap(globals.tiles.tile[TILE_HILL], 5 * 64, 1 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
+    }
+    if (hill_type & TILE_ID_HILL_12){
+        al_draw_scaled_bitmap(globals.tiles.tile[TILE_HILL], 0 * 64, 2 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
+    }
+    if (hill_type & TILE_ID_HILL_13){
+        al_draw_scaled_bitmap(globals.tiles.tile[TILE_HILL], 1 * 64, 2 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
+    }
+    if (hill_type & TILE_ID_HILL_14){
+        al_draw_scaled_bitmap(globals.tiles.tile[TILE_HILL], 2 * 64, 2 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
+    }
+    if (hill_type & TILE_ID_HILL_15){
+        al_draw_scaled_bitmap(globals.tiles.tile[TILE_HILL], 3 * 64, 2 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
+    }
+    if (hill_type & TILE_ID_HILL_16){
+        al_draw_scaled_bitmap(globals.tiles.tile[TILE_HILL], 4 * 64, 2 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
     }
 
 }
