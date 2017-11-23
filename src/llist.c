@@ -82,7 +82,7 @@ void free_llist_item(void *a)
 
 }
 
-struct llist_t* remove_ll_item(struct llist_t *head,struct llist_t *ll)
+struct llist_t* remove_ll_item(struct llist_t *head,struct llist_t *ll,void (*free_struct)(void *))
 {
     if (head != NULL){
         struct llist_t *cursor;
@@ -90,14 +90,14 @@ struct llist_t* remove_ll_item(struct llist_t *head,struct llist_t *ll)
         if (head == ll){
             cursor = head;
             head = head->next;
-            free_llist_item(ll->ptr);
+            free_struct(ll->ptr);
             free(ll);
 
         //if last and not only one because of previous condition
         } else if (ll->next == NULL){
             cursor = ll->prev;
             cursor->next = NULL;
-            free_llist_item(ll->ptr);
+            free_struct(ll->ptr);
             free(ll);
 
         //if in the middle
@@ -108,7 +108,7 @@ struct llist_t* remove_ll_item(struct llist_t *head,struct llist_t *ll)
             //next node
             cursor = ll->next;
             cursor->prev = ll->prev;
-            free_llist_item(ll->ptr);
+            free_struct(ll->ptr);
             free(ll);
         }
     }
@@ -119,7 +119,6 @@ struct llist_t* remove_ll_item(struct llist_t *head,struct llist_t *ll)
 struct enemy_t* create_enemy(int x, int y, int path_start, float speed, float health, int credits)
 {
     struct enemy_t *a = (struct enemy_t*)malloc(sizeof(struct enemy_t));
-    a->ll_id = LLIST_ENEMY; //struct ID
     a->position.x = x;
     a->position.y = y;
     a->path_num = path_start;
@@ -131,11 +130,16 @@ struct enemy_t* create_enemy(int x, int y, int path_start, float speed, float he
     return a;
 }
 
+void free_enemy_t (void *a)
+{
+    struct enemy_t *b = a;
+    free(b);
+}
+
 //TOWERS
 struct tower_t* create_tower(int x, int y, float angle, float damage, int level, float range, int price)
 {
     struct tower_t *a = (struct tower_t*)malloc(sizeof(struct tower_t));
-    a->ll_id = LLIST_TOWER; //struct ID
     a->position.x = x;
     a->position.y = y;
     a->angle = angle;
@@ -149,11 +153,16 @@ struct tower_t* create_tower(int x, int y, float angle, float damage, int level,
     return a;
 }
 
+void free_tower_t (void *a)
+{
+    struct tower_t *b = a;
+    free(b);
+}
+
 //FLOATING TEXT
 struct float_text_t* create_float_text(int x, int y, int move_per_tick, int timeout, char text[], ALLEGRO_COLOR colour)
 {
     struct float_text_t *a = (struct float_text_t*)malloc(sizeof(struct float_text_t));
-    a->ll_id = LLIST_FLOAT_TEXT; //struct ID
     a->x = x;
     a->y = y;
     a->move_per_tick = move_per_tick;
@@ -162,4 +171,10 @@ struct float_text_t* create_float_text(int x, int y, int move_per_tick, int time
     a->colour = colour;
 
     return a;
+}
+
+void free_float_text_t (void *a)
+{
+    struct float_text_t *b = a;
+    free(b);
 }

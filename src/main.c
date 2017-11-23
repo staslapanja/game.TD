@@ -81,17 +81,17 @@ void shutdown(void)
     //free all llist objects
     //enemy
     while(globals.enemy != NULL){
-        globals.enemy = remove_ll_item(globals.enemy,globals.enemy);
+        globals.enemy = remove_ll_item(globals.enemy,globals.enemy,free_enemy_t);
     }
     //towers
     while(globals.towers != NULL){
-        globals.towers = remove_ll_item(globals.towers,globals.towers);
+        globals.towers = remove_ll_item(globals.towers,globals.towers,free_tower_t);
     }
     //buildings
 
     //floating text
     while(globals.float_text != NULL){
-        globals.float_text = remove_ll_item(globals.float_text,globals.float_text);
+        globals.float_text = remove_ll_item(globals.float_text,globals.float_text,free_float_text_t);
     }
 
     //free other memory structures

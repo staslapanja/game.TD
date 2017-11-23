@@ -146,7 +146,6 @@ struct llist_t {
 };
 
 struct enemy_t{
-    int ll_id;
     struct xy_t position;
     int path_num;
     float speed;
@@ -156,7 +155,6 @@ struct enemy_t{
 };
 
 struct tower_t{
-    int ll_id;
     struct xy_t position;
     float angle;
     float damage;
@@ -194,7 +192,6 @@ struct path_t{
 };
 
 struct float_text_t{
-    int ll_id;
     int x;
     int y;
     int move_per_tick;

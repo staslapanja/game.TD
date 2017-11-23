@@ -621,7 +621,7 @@ void update_enemy(void)
             //remove enemy
             struct llist_t *temp = cursor;
             cursor = cursor->next;
-            globals.enemy = remove_ll_item(globals.enemy,temp);
+            globals.enemy = remove_ll_item(globals.enemy,temp,free_enemy_t);
             globals.enemy_num--;
         //move the enemy
         } else {
@@ -629,7 +629,7 @@ void update_enemy(void)
             if(check_enemy_finish(enemy)){
                 struct llist_t *temp = cursor;
                 cursor = cursor->next;
-                globals.enemy = remove_ll_item(globals.enemy,temp);
+                globals.enemy = remove_ll_item(globals.enemy,temp,free_enemy_t);
                 globals.enemy_num--;
             } else {
                 cursor = cursor->next;
@@ -748,7 +748,7 @@ void update_float_text(void)
         float_text = cursor->ptr;
         if (float_text->timeout <= 0){
             struct llist_t *temp = cursor;
-            globals.float_text = remove_ll_item(globals.float_text,temp);
+            globals.float_text = remove_ll_item(globals.float_text,temp,free_float_text_t);
         } else {
             float_text->y = float_text->y - float_text->move_per_tick;
             float_text->timeout = float_text->timeout - 1;
