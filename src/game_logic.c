@@ -270,16 +270,16 @@ void mouse_actions(void)
 
     //zoom control with mouse wheel
     if (globals.mouse.dz > 0){
-        if (globals.game_state.zoom == 2){
-            globals.game_state.zoom = 2;
+        if (globals.game_state.zoom_mult >= MAX_ZOOM){
+            globals.game_state.zoom_mult = MAX_ZOOM;
         } else {
-            globals.game_state.zoom++;
+            globals.game_state.zoom_mult += 0.1;
         }
     } else if (globals.mouse.dz < 0){
-        if (globals.game_state.zoom == 0){
-            globals.game_state.zoom = 0;
+        if (globals.game_state.zoom_mult <= MIN_ZOOM){
+            globals.game_state.zoom_mult = MIN_ZOOM;
         } else {
-            globals.game_state.zoom--;
+            globals.game_state.zoom_mult -= 0.1;
         }
     }
 
@@ -543,23 +543,7 @@ void place_object_on_map(void)
 
 void set_zoom_tile_size(void)
 {
-    switch(globals.game_state.zoom){
-        case 0:
-            globals.tiles.tile_size = 32;
-            globals.game_state.zoom_mult = 0.5f;
-            break;
-        case 1:
-            globals.tiles.tile_size = 64;
-            globals.game_state.zoom_mult = 1.0f;
-            break;
-        case 2:
-            globals.tiles.tile_size = 128;
-            globals.game_state.zoom_mult = 2.0f;
-            break;
-        default:
-            globals.tiles.tile_size = 32;
-            break;
-    }
+    globals.tiles.tile_size = 64 * globals.game_state.zoom_mult;
 }
 
 void mouse_clear_diff(void)

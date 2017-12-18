@@ -60,6 +60,9 @@
 #define LLIST_TOWER 1
 #define LLIST_FLOAT_TEXT 2
 
+#define MAX_ZOOM 2.0
+#define MIN_ZOOM 0.5
+
 extern ALLEGRO_EVENT_QUEUE* event_queue;
 extern ALLEGRO_EVENT event;
 extern ALLEGRO_TIMER* timer;
