@@ -215,12 +215,7 @@ void keyboard_actions(void)
 {
     //zoom control
     if (globals.keys.key_z == true){
-        if (globals.game_state.zoom == 2){
-            globals.game_state.zoom = 0;
-        } else {
-            globals.game_state.zoom++;
-        }
-
+        globals.game_state.zoom_mult = 1.0;
         globals.keys.key_z = false;
     }
 
