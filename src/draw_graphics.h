@@ -20,5 +20,6 @@ void draw_enemy(void);
 void draw_health_bar(float x, float y, int len, float max, float value);
 void draw_towers(void);
 void draw_floating_text(void);
+void draw_debug(void);
 
 #endif

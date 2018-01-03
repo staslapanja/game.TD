@@ -11,6 +11,7 @@ void init_globals(void)
     globals.keys.key_z = false;
     globals.keys.key_g = false;
     globals.keys.key_b = false;
+    globals.keys.key_d = false;
     //init mouse
     globals.mouse.lb = false;
     globals.mouse.rb = false;
@@ -31,6 +32,7 @@ void init_globals(void)
     globals.game_state.end_game = false;
     globals.game_state.grid_en = false;
     globals.game_state.build_menu_on = false;
+    globals.game_state.debug_on = false;
     globals.game_state.tower0_en = true;
     globals.game_state.tower0_place = false;
     globals.game_state.tower1_en = false;
@@ -250,6 +252,12 @@ void keyboard_actions(void)
     if (globals.keys.key_e == true){
         globals.enemy_spawn = true;
         globals.keys.key_e = false;
+    }
+
+    //debug_screen
+    if (globals.keys.key_d == true){
+        globals.game_state.debug_on = true;
+        globals.keys.key_d = false;
     }
 }
 

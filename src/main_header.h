@@ -81,6 +81,7 @@ struct game_state_t{
     bool end_game;
     bool grid_en;
     bool build_menu_on;
+    bool debug_on;
     bool tower0_en;
     bool tower0_place;
     bool tower1_en;
@@ -112,6 +113,7 @@ struct keys_t{
     bool key_g;
     bool key_b;
     bool key_e;
+    bool key_d;
 };
 
 struct mouse_t{

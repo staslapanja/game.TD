@@ -145,6 +145,7 @@ void update_graphics(void)
     draw_cursor_rect();
     draw_build_menu();
     draw_top_bar();
+    draw_debug();
 }
 
 void draw_background(void)
@@ -412,8 +413,7 @@ void draw_top_bar(void)
     //text
     ALLEGRO_COLOR text_color0 = al_map_rgb(176,196,222); //light steel blue
     al_draw_textf(fonts[0] , text_color0, x0 + 10, y0 + 10, ALLEGRO_ALIGN_LEFT, "Credits: %6.1f",globals.game_state.credits);
-    //al_draw_textf(fonts[0] , text_color0, x0 + 300, y0 + 10, ALLEGRO_ALIGN_LEFT, "Energy: %4.f/%4.f",globals.game_state.energy_produced, globals.game_state.energy_required);
-    al_draw_textf(fonts[0] , text_color0, x0 + 300, y0 + 10, ALLEGRO_ALIGN_LEFT, "Mult: %f",globals.game_state.zoom_mult);
+    al_draw_textf(fonts[0] , text_color0, x0 + 300, y0 + 10, ALLEGRO_ALIGN_LEFT, "Energy: %4.f/%4.f",globals.game_state.energy_produced, globals.game_state.energy_required);
     al_draw_textf(fonts[0] , text_color0, x0 + 600, y0 + 10, ALLEGRO_ALIGN_LEFT, "Next: %3.1f",(float)globals.game_state.count_down/GAME_UPADTES_PER_SEC);
 }
 
@@ -555,5 +555,17 @@ void draw_floating_text(void)
 
         al_draw_text(fonts[0] , float_text->colour, x, y, ALLEGRO_ALIGN_LEFT, float_text->text);
         cursor = cursor->next;
+    }
+}
+
+void draw_debug(void)
+{
+
+    if (globals.game_state.debug_on == true){
+        ALLEGRO_COLOR text_color0 = al_map_rgb(0,0,250);
+        al_draw_textf(fonts[0] , text_color0, 30,  80, ALLEGRO_ALIGN_LEFT, "Debug:");
+        al_draw_textf(fonts[0] , text_color0, 30, 100, ALLEGRO_ALIGN_LEFT, "ZOOM: %f",globals.game_state.zoom_mult);
+        al_draw_textf(fonts[0] , text_color0, 30, 120, ALLEGRO_ALIGN_LEFT, "MOUSE: %d,%d",globals.mouse.x,globals.mouse.y);
+        al_draw_textf(fonts[0] , text_color0, 30, 140, ALLEGRO_ALIGN_LEFT, "ScrCtr: %d,%d",globals.game_state.screen_center.x,globals.game_state.screen_center.y);
     }
 }
