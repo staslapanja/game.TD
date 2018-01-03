@@ -241,11 +241,6 @@ void keyboard_actions(void)
     if (globals.keys.key_b == true){
         globals.game_state.build_menu_on = !globals.game_state.build_menu_on;
         globals.keys.key_b = false;
-        if (globals.game_state.build_menu_on == true){
-            globals.game_state.screen_w -= globals.game_state.side_menu_w;
-        } else {
-            globals.game_state.screen_w = al_get_display_width(display);
-        }
     }
 
     //spawn enemy
@@ -342,13 +337,14 @@ bool mouse_inside_map_screen(void)
     mouse_x = globals.mouse.x;
     mouse_y = globals.mouse.y;
 
-    int screen_w, screen_h, top_bar_h;
+    int screen_w, screen_h, top_bar_h, side_menu_w;
     screen_w = globals.game_state.screen_w;
     screen_h = globals.game_state.screen_h;
     top_bar_h = globals.game_state.top_bar_h;
+    side_menu_w = globals.game_state.side_menu_w;
 
     bool check_x,check_y;
-    check_x = (mouse_x >= 0) && (mouse_x < screen_w);   //screen_w already includes side menu offset
+    check_x = (mouse_x >= 0) && (mouse_x < (screen_w - side_menu_w));
     check_y = (mouse_y >= top_bar_h) && (mouse_y < screen_h);
 
     if (check_x && check_y){
