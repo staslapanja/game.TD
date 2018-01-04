@@ -13,6 +13,8 @@
 
 #define GAME_UPADTES_PER_SEC 60
 
+#define TILE_DEFSIZE    64
+
 #define TILE_NUM    7
 
 #define TILE_BLANK  0
@@ -139,7 +141,6 @@ struct tiles_t {
     ALLEGRO_BITMAP *tile[TILE_NUM];
     int *p;
     int *hill;
-    int tile_size;
     int tile_w;
     int tile_h;
     struct xy_t map_center;

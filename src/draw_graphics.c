@@ -161,12 +161,14 @@ void draw_map(void)
     int tile_type, hill_type;
     float x,y;
 
-    int tile_size;
+    float mult,tile_size;
 
     float offset = 0.5f; //define pixels in the center of a pixel area
     ALLEGRO_COLOR grid_color = al_map_rgb(0, 0, 0);  //black
 
-    tile_size = globals.tiles.tile_size;
+    mult = globals.game_state.zoom_mult;
+    //use integer precision for for better tile connections without empty spaces
+    tile_size = (int)(TILE_DEFSIZE * mult);
 
     for (h = 0; h < globals.tiles.tile_h; h++){
         for (w = 0; w < globals.tiles.tile_w; w++){
@@ -269,12 +271,13 @@ void draw_rail(void)
     int w_prev,h_prev,w_next,h_next;
     int dw0, dw1, dh0, dh1;
     float x,y;
-    int tile_size,tile_w;
-    float mult;
+    int tile_w;
+    float mult,tile_size;
 
     tile_w = globals.tiles.tile_w;
-    tile_size = globals.tiles.tile_size;
-    mult = (float)tile_size/64;
+    mult = globals.game_state.zoom_mult;
+    //use integer precision for for better tile connections without empty spaces
+    tile_size = (int)(TILE_DEFSIZE * mult);
 
     i = globals.rail_start.y * tile_w + globals.rail_start.x;
         w = globals.rail[i].pos.x;
@@ -365,8 +368,8 @@ void draw_cursor_rect(void)
     x = globals.mouse.grid_x;
     y = globals.mouse.grid_y;
 
-    int tile_size = globals.tiles.tile_size;
-    //float mult = globals.game_state.zoom_mult;
+    float mult = globals.game_state.zoom_mult;
+    float tile_size = TILE_DEFSIZE * mult;
 
     al_draw_rectangle(x + offset + 1,y + offset + 1, x + tile_size-2 + offset,y + tile_size-2 + offset, cursor_color0, 3);
     al_draw_rectangle(x + offset + 1,y + offset + 1, x + tile_size-2 + offset,y + tile_size-2 + offset, cursor_color1, 1);
@@ -468,8 +471,8 @@ void draw_enemy(void)
     float x,y;
     struct llist_t *cursor = globals.enemy;
     struct enemy_t *enemy;
-    int tile_size = globals.tiles.tile_size;
     float mult = globals.game_state.zoom_mult;
+    float tile_size = TILE_DEFSIZE * mult;
 
     while(cursor != NULL){
         //convert virtual position to resized position
@@ -511,8 +514,8 @@ void draw_towers(void)
     float t_x,t_y,e_x,e_y;
     struct llist_t *cursor = globals.towers;
     struct tower_t *tower;
-    int tile_size = globals.tiles.tile_size;
     float mult = globals.game_state.zoom_mult;
+    float tile_size = TILE_DEFSIZE * mult;
 
     while(cursor != NULL){
         tower = cursor->ptr;

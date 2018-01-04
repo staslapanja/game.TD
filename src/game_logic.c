@@ -83,12 +83,11 @@ void init_tiles(int w, int h)
         globals.tiles.p[i] = TILE_BLANK;
         globals.tiles.hill[i] = 0x0;
     }
-    globals.tiles.tile_size = 64;
     globals.tiles.tile_w = w;
     globals.tiles.tile_h = h;
     //set the map centre
-    globals.tiles.map_center.x = (w * 64)/2;
-    globals.tiles.map_center.y = (h * 64)/2;
+    globals.tiles.map_center.x = (w * TILE_DEFSIZE)/2;
+    globals.tiles.map_center.y = (h * TILE_DEFSIZE)/2;
 }
 
 void init_structures(void)
@@ -360,7 +359,7 @@ void mouse_to_grid(void)
     float mouse_x,mouse_y;
 
     int tile_size;
-    tile_size = globals.tiles.tile_size;
+    tile_size = TILE_DEFSIZE;
 
     //keep position inside screen
     if (globals.mouse.x > globals.game_state.screen_w){
@@ -540,11 +539,6 @@ void place_object_on_map(void)
     }
 }
 
-void set_zoom_tile_size(void)
-{
-    globals.tiles.tile_size = 64 * globals.game_state.zoom_mult;
-}
-
 void mouse_clear_diff(void)
 {
     globals.mouse.dx = 0;
@@ -554,18 +548,22 @@ void mouse_clear_diff(void)
 
 void bound_screen(void)
 {
+    float tile_size = TILE_DEFSIZE * globals.game_state.zoom_mult;
+    int tile_w = globals.tiles.tile_w;
+    int tile_h = globals.tiles.tile_h;
+
     //correct if screen is out of bounds
     if (globals.game_state.screen_center.x < 0){
         globals.game_state.screen_center.x = 0;
     }
-    if (globals.game_state.screen_center.x > (globals.tiles.tile_w * globals.tiles.tile_size)){
-        globals.game_state.screen_center.x = globals.tiles.tile_w * globals.tiles.tile_size;
+    if (globals.game_state.screen_center.x > (tile_w * tile_size)){
+        globals.game_state.screen_center.x = tile_w * tile_size;
     }
     if (globals.game_state.screen_center.y < 0){
         globals.game_state.screen_center.y = 0;
     }
-    if (globals.game_state.screen_center.y > (globals.tiles.tile_h * globals.tiles.tile_size)){
-        globals.game_state.screen_center.y = globals.tiles.tile_h * globals.tiles.tile_size;
+    if (globals.game_state.screen_center.y > (tile_h * tile_size)){
+        globals.game_state.screen_center.y = tile_h * tile_size;
     }
 }
 
@@ -575,7 +573,7 @@ void update_enemy(void)
     //create enemy
     if ((globals.enemy_spawn == true) || (globals.game_state.count_down <= 0)){
         struct enemy_t *temp = NULL;
-        temp = create_enemy(globals.rail_start.x * 64, globals.rail_start.y * 64, globals.rail_start.y * tile_w + globals.rail_start.x, 2, 100,10);
+        temp = create_enemy(globals.rail_start.x * TILE_DEFSIZE, globals.rail_start.y * TILE_DEFSIZE, globals.rail_start.y * tile_w + globals.rail_start.x, 2, 100,10);
         globals.enemy = append_ll_item(globals.enemy,temp);
         globals.enemy_num++;
         globals.enemy_spawn = false;
@@ -775,7 +773,6 @@ void update_logic(void)
     get_cursor_info();
     bound_screen();
 
-    set_zoom_tile_size();
     mouse_clear_diff();
 
     update_enemy();
