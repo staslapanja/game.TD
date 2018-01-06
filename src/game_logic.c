@@ -252,7 +252,7 @@ void keyboard_actions(void)
 
     //debug_screen
     if (globals.keys.key_d == true){
-        globals.game_state.debug_on = true;
+        globals.game_state.debug_on = !globals.game_state.debug_on;
         globals.keys.key_d = false;
     }
 }
