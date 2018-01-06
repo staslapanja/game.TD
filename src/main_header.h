@@ -75,8 +75,8 @@ extern struct globals_t globals;
 void abort_game(const char* message);
 
 struct xy_t {
-    int x;
-    int y;
+    float x;
+    float y;
 };
 
 struct game_state_t{
@@ -123,8 +123,8 @@ struct mouse_t{
     bool rb;
     int x;
     int y;
-    int grid_x;
-    int grid_y;
+    float grid_x;
+    float grid_y;
     int tile_x;
     int tile_y;
     int dx;

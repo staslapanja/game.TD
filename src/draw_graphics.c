@@ -173,8 +173,8 @@ void draw_map(void)
     for (h = 0; h < globals.tiles.tile_h; h++){
         for (w = 0; w < globals.tiles.tile_w; w++){
 
-            x = globals.game_state.screen_w/2 - globals.game_state.screen_center.x + w * tile_size;
-            y = globals.game_state.screen_h/2 - globals.game_state.screen_center.y + h * tile_size;
+            x = globals.game_state.screen_w/2 - globals.game_state.screen_center.x * mult + w * tile_size;
+            y = globals.game_state.screen_h/2 - globals.game_state.screen_center.y * mult + h * tile_size;
 
             //check to only draw the visible tiles instead of the whole map
             //change to calculation to remove unneeded checks!!!
@@ -282,8 +282,8 @@ void draw_rail(void)
     i = globals.rail_start.y * tile_w + globals.rail_start.x;
         w = globals.rail[i].pos.x;
         h = globals.rail[i].pos.y;
-        x = globals.game_state.screen_w/2 - globals.game_state.screen_center.x + w * tile_size;
-        y = globals.game_state.screen_h/2 - globals.game_state.screen_center.y + h * tile_size;
+        x = globals.game_state.screen_w/2 - globals.game_state.screen_center.x * mult + w * tile_size;
+        y = globals.game_state.screen_h/2 - globals.game_state.screen_center.y * mult + h * tile_size;
         al_draw_scaled_rotated_bitmap(globals.tiles.tile[TILE_RAIL_STRAIGHT], 32, 32, x+(tile_size/2), y+(tile_size/2), mult, mult, -ALLEGRO_PI/2, 0x0);
 
         w = globals.rail[i].pos_next.x;
@@ -295,8 +295,8 @@ void draw_rail(void)
         w_next = globals.rail[i].pos_next.x;
         h_next = globals.rail[i].pos_next.y;
 
-        x = globals.game_state.screen_w/2 - globals.game_state.screen_center.x + w * tile_size;
-        y = globals.game_state.screen_h/2 - globals.game_state.screen_center.y + h * tile_size;
+        x = globals.game_state.screen_w/2 - globals.game_state.screen_center.x * mult + w * tile_size;
+        y = globals.game_state.screen_h/2 - globals.game_state.screen_center.y * mult + h * tile_size;
 
         //check if not last rail piece
         //first was already set manually so it does not have to be checked
@@ -479,8 +479,8 @@ void draw_enemy(void)
 
         enemy = cursor->ptr;
 
-        x = globals.game_state.screen_w/2 - globals.game_state.screen_center.x + (enemy->position.x * mult);
-        y = globals.game_state.screen_h/2 - globals.game_state.screen_center.y + (enemy->position.y * mult);
+        x = globals.game_state.screen_w/2 - globals.game_state.screen_center.x * mult + (enemy->position.x * mult);
+        y = globals.game_state.screen_h/2 - globals.game_state.screen_center.y * mult + (enemy->position.y * mult);
         //draw enemy
         al_draw_scaled_rotated_bitmap(globals.objects[OBJ_ENEMY], 32, 32, x+(tile_size/2), y+(tile_size/2), mult, mult, (rand()%360)*(2*ALLEGRO_PI)/360, 0x0);
         //al_draw_scaled_bitmap(globals.objects[OBJ_ENEMY], 0, 0, 64, 64, x , y , tile_size, tile_size, 0x0);
@@ -521,14 +521,14 @@ void draw_towers(void)
         tower = cursor->ptr;
         //convert virtual position to resized position
 
-        t_x = globals.game_state.screen_w/2 - globals.game_state.screen_center.x + (tower->position.x * mult);
-        t_y = globals.game_state.screen_h/2 - globals.game_state.screen_center.y + (tower->position.y * mult);
+        t_x = globals.game_state.screen_w/2 - globals.game_state.screen_center.x * mult + (tower->position.x * mult);
+        t_y = globals.game_state.screen_h/2 - globals.game_state.screen_center.y * mult + (tower->position.y * mult);
         //draw tower base
         al_draw_scaled_bitmap(globals.objects[OBJ_TOWER], 0, 0, 64, 64, t_x , t_y , tile_size, tile_size, 0x0);
         //draw beam
         if (tower->fire_active == true){
-            e_x = globals.game_state.screen_w/2 - globals.game_state.screen_center.x + (tower->target->position.x * mult);
-            e_y = globals.game_state.screen_h/2 - globals.game_state.screen_center.y + (tower->target->position.y * mult);
+            e_x = globals.game_state.screen_w/2 - globals.game_state.screen_center.x * mult + (tower->target->position.x * mult);
+            e_y = globals.game_state.screen_h/2 - globals.game_state.screen_center.y * mult + (tower->target->position.y * mult);
             al_draw_line(t_x+32*mult, t_y+32*mult, e_x+32*mult, e_y+32*mult, al_map_rgb(255, 0, 0), 3);
             al_draw_line(t_x+32*mult, t_y+32*mult, e_x+32*mult, e_y+32*mult, al_map_rgb(255, 255, 255), 1);
             al_draw_filled_circle(e_x+32*mult, e_y+32*mult, rand()%12, al_map_rgba(255, 0, 0, rand()%255));
@@ -553,8 +553,8 @@ void draw_floating_text(void)
         float_text = cursor->ptr;
         //check if change of font height will be required!!!
 
-        x = globals.game_state.screen_w/2 - globals.game_state.screen_center.x + (float_text->x * mult);
-        y = globals.game_state.screen_h/2 - globals.game_state.screen_center.y + (float_text->y * mult);
+        x = globals.game_state.screen_w/2 - globals.game_state.screen_center.x * mult + (float_text->x * mult);
+        y = globals.game_state.screen_h/2 - globals.game_state.screen_center.y * mult + (float_text->y * mult);
 
         al_draw_text(fonts[0] , float_text->colour, x, y, ALLEGRO_ALIGN_LEFT, float_text->text);
         cursor = cursor->next;
@@ -569,6 +569,8 @@ void draw_debug(void)
         al_draw_textf(fonts[0] , text_color0, 30,  80, ALLEGRO_ALIGN_LEFT, "Debug:");
         al_draw_textf(fonts[0] , text_color0, 30, 100, ALLEGRO_ALIGN_LEFT, "ZOOM: %f",globals.game_state.zoom_mult);
         al_draw_textf(fonts[0] , text_color0, 30, 120, ALLEGRO_ALIGN_LEFT, "MOUSE: %d,%d",globals.mouse.x,globals.mouse.y);
-        al_draw_textf(fonts[0] , text_color0, 30, 140, ALLEGRO_ALIGN_LEFT, "ScrCtr: %d,%d",globals.game_state.screen_center.x,globals.game_state.screen_center.y);
+        al_draw_textf(fonts[0] , text_color0, 30, 140, ALLEGRO_ALIGN_LEFT, "MOUSET: %d,%d",globals.mouse.tile_x,globals.mouse.tile_y);
+        al_draw_textf(fonts[0] , text_color0, 30, 160, ALLEGRO_ALIGN_LEFT, "MOUSEG: %f,%f",globals.mouse.grid_x,globals.mouse.grid_y);
+        al_draw_textf(fonts[0] , text_color0, 30, 180, ALLEGRO_ALIGN_LEFT, "ScrCtr: %f,%f",globals.game_state.screen_center.x,globals.game_state.screen_center.y);
     }
 }

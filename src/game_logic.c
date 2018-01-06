@@ -220,15 +220,17 @@ void keyboard_actions(void)
         globals.keys.key_z = false;
     }
 
+    float mult = globals.game_state.zoom_mult;
+
     //screen move with keys
     if (globals.keys.key_right == true)
-        globals.game_state.screen_center.x += globals.game_state.screen_step;
+        globals.game_state.screen_center.x += globals.game_state.screen_step / mult;
     if (globals.keys.key_left == true)
-        globals.game_state.screen_center.x -= globals.game_state.screen_step;
+        globals.game_state.screen_center.x -= globals.game_state.screen_step / mult;
     if (globals.keys.key_down == true)
-        globals.game_state.screen_center.y += globals.game_state.screen_step;
+        globals.game_state.screen_center.y += globals.game_state.screen_step / mult;
     if (globals.keys.key_up == true)
-        globals.game_state.screen_center.y -= globals.game_state.screen_step;
+        globals.game_state.screen_center.y -= globals.game_state.screen_step / mult;
 
     //grid enable
     if (globals.keys.key_g == true){
@@ -257,13 +259,6 @@ void keyboard_actions(void)
 
 void mouse_actions(void)
 {
-    //screen move with mouse if RB held
-    if (globals.mouse.rb == true){
-        //horizontal movement
-        globals.game_state.screen_center.x -= globals.mouse.dx;
-        //vertical movement
-        globals.game_state.screen_center.y -= globals.mouse.dy;
-    }
 
     //zoom control with mouse wheel
     if (globals.mouse.dz > 0){
@@ -278,6 +273,16 @@ void mouse_actions(void)
         } else {
             globals.game_state.zoom_mult -= 0.1;
         }
+    }
+
+    float mult = globals.game_state.zoom_mult;
+
+    //screen move with mouse if RB held
+    if (globals.mouse.rb == true){
+        //horizontal movement
+        globals.game_state.screen_center.x -= globals.mouse.dx / mult;
+        //vertical movement
+        globals.game_state.screen_center.y -= globals.mouse.dy / mult;
     }
 
     //menu actions
@@ -360,6 +365,7 @@ void mouse_to_grid(void)
 
     int tile_size;
     tile_size = TILE_DEFSIZE;
+    float mult = globals.game_state.zoom_mult;
 
     //keep position inside screen
     if (globals.mouse.x > globals.game_state.screen_w){
@@ -373,8 +379,8 @@ void mouse_to_grid(void)
         mouse_y = globals.mouse.y;
     }
     //get mouse position on map
-    x = globals.game_state.screen_center.x - globals.game_state.screen_w/2 + mouse_x;
-    y = globals.game_state.screen_center.y - globals.game_state.screen_h/2 + mouse_y;
+    x = globals.game_state.screen_center.x - (globals.game_state.screen_w/(2*mult)) + (mouse_x / mult);
+    y = globals.game_state.screen_center.y - (globals.game_state.screen_h/(2*mult)) + (mouse_y / mult);
 
     //determine the position of the tile
     //that the mouse points to on the map
@@ -387,7 +393,6 @@ void mouse_to_grid(void)
     }
 
     globals.mouse.tile_x = x;
-    x = x * tile_size;
 
     if (y < 0){
         y = 0;
@@ -398,11 +403,10 @@ void mouse_to_grid(void)
     }
 
     globals.mouse.tile_y = y;
-    y = y * tile_size;
 
     //convert map position back to screen position
-    globals.mouse.grid_x = x - (globals.game_state.screen_center.x - globals.game_state.screen_w/2);
-    globals.mouse.grid_y = y - (globals.game_state.screen_center.y - globals.game_state.screen_h/2);
+    globals.mouse.grid_x = (x * tile_size * mult) - (globals.game_state.screen_center.x * mult - globals.game_state.screen_w/2);
+    globals.mouse.grid_y = (y * tile_size * mult) - (globals.game_state.screen_center.y * mult - globals.game_state.screen_h/2);
 }
 
 void get_cursor_info(void)
@@ -548,7 +552,7 @@ void mouse_clear_diff(void)
 
 void bound_screen(void)
 {
-    float tile_size = TILE_DEFSIZE * globals.game_state.zoom_mult;
+    float tile_size = TILE_DEFSIZE;
     int tile_w = globals.tiles.tile_w;
     int tile_h = globals.tiles.tile_h;
 
