@@ -405,8 +405,9 @@ void mouse_to_grid(void)
     globals.mouse.tile_y = y;
 
     //convert map position back to screen position
-    globals.mouse.grid_x = (x * tile_size * mult) - (globals.game_state.screen_center.x * mult - globals.game_state.screen_w/2);
-    globals.mouse.grid_y = (y * tile_size * mult) - (globals.game_state.screen_center.y * mult - globals.game_state.screen_h/2);
+    //round tile size to integer
+    globals.mouse.grid_x = (x * (int)(tile_size * mult)) - (globals.game_state.screen_center.x * mult - globals.game_state.screen_w/2);
+    globals.mouse.grid_y = (y * (int)(tile_size * mult)) - (globals.game_state.screen_center.y * mult - globals.game_state.screen_h/2);
 }
 
 void get_cursor_info(void)
