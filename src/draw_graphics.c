@@ -143,8 +143,9 @@ void update_graphics(void)
     draw_towers();
     draw_floating_text();
     draw_cursor_rect();
-    draw_build_menu();
+    draw_side_menu();
     draw_top_bar();
+    draw_bottom_bar();
     draw_debug();
 }
 
@@ -402,7 +403,7 @@ void draw_top_bar(void)
 
     float x0,y0,x1,y1;
     int screen_w,top_bar;
-    screen_w = al_get_display_width(display);
+    screen_w = globals.game_state.screen_w;
     top_bar = globals.game_state.top_bar_h;
     x0 = 0;
     y0 = 0;
@@ -416,24 +417,25 @@ void draw_top_bar(void)
     //text
     ALLEGRO_COLOR text_color0 = al_map_rgb(176,196,222); //light steel blue
     al_draw_textf(fonts[0] , text_color0, x0 + 10, y0 + 10, ALLEGRO_ALIGN_LEFT, "Credits: %6.1f",globals.game_state.credits);
-    al_draw_textf(fonts[0] , text_color0, x0 + 300, y0 + 10, ALLEGRO_ALIGN_LEFT, "Energy: %4.f/%4.f",globals.game_state.energy_produced, globals.game_state.energy_required);
-    al_draw_textf(fonts[0] , text_color0, x0 + 600, y0 + 10, ALLEGRO_ALIGN_LEFT, "Next: %3.1f",(float)globals.game_state.count_down/GAME_UPADTES_PER_SEC);
+    al_draw_textf(fonts[0] , text_color0, x0 + 300, y0 + 10, ALLEGRO_ALIGN_LEFT, "Energy: %.f/%.f",globals.game_state.energy_produced, globals.game_state.energy_required);
+    al_draw_textf(fonts[0] , text_color0, x0 + 600, y0 + 10, ALLEGRO_ALIGN_LEFT, "Next: %3.1f",(float)globals.game_state.count_down/GAME_UPDATES_PER_SEC);
 }
 
-void draw_build_menu(void)
+void draw_side_menu(void)
 {
-    if (globals.game_state.build_menu_on == true){
+    if (globals.game_state.side_menu_visible == true){
         float offset = 0.5f; //define pixels in the centre of a pixel area
 
         float x0,y0,x1,y1;
-        int screen_w,screen_h,top_bar;
-        screen_w = al_get_display_width(display);
-        screen_h = al_get_display_height(display);
+        int screen_w,screen_h,top_bar,bottom_bar_h;
+        screen_w = globals.game_state.screen_w;
+        screen_h = globals.game_state.screen_h;
         top_bar = globals.game_state.top_bar_h;
+        bottom_bar_h = globals.game_state.bottom_bar_h;
         x0 = screen_w-globals.game_state.side_menu_w;
         y0 = top_bar;
         x1 = screen_w;
-        y1 = screen_h;
+        y1 = screen_h-bottom_bar_h;
         ALLEGRO_COLOR base_color    = al_map_rgb(112,128,144); //slate gray
         ALLEGRO_COLOR border_color0 = al_map_rgb(119,136,153); //light slate gray
         ALLEGRO_COLOR border_color1 = al_map_rgb(176,196,222); //light steel blue
@@ -464,6 +466,33 @@ void draw_build_menu(void)
             }
         }
     }
+}
+
+void draw_bottom_bar(void)
+{
+    float offset = 0.5f; //define pixels in the centre of a pixel area
+
+    ALLEGRO_COLOR base_color    = al_map_rgb(112,128,144); //slate gray
+    ALLEGRO_COLOR border_color0 = al_map_rgb(119,136,153); //light slate gray
+    ALLEGRO_COLOR border_color1 = al_map_rgb(176,196,222); //light steel blue
+
+    float x0,y0,x1,y1;
+    int screen_w,screen_h,bottom_bar_h;
+    screen_w = globals.game_state.screen_w;
+    screen_h = globals.game_state.screen_h;
+    bottom_bar_h = globals.game_state.bottom_bar_h;
+    x0 = 0;
+    y0 = screen_h-bottom_bar_h;
+    x1 = screen_w;
+    y1 = screen_h;
+    //graphics
+    al_draw_filled_rectangle(x0, y0, x1, y1, base_color);
+    al_draw_rectangle(x0+1+offset, y0+1+offset, x1-1+offset, y1-1+offset, border_color0, 3);
+    al_draw_rectangle(x0+1+offset, y0+1+offset, x1-1+offset, y1-1+offset, border_color1, 1);
+
+    //text
+    ALLEGRO_COLOR text_color0 = al_map_rgb(176,196,222); //light steel blue
+    al_draw_textf(fonts[0] , text_color0, x0 + 10, y0 + 10, ALLEGRO_ALIGN_LEFT, "Bottom bar");
 }
 
 void draw_enemy(void)

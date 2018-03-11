@@ -31,7 +31,7 @@ void init_globals(void)
     //init game states
     globals.game_state.end_game = false;
     globals.game_state.grid_en = false;
-    globals.game_state.build_menu_on = false;
+    globals.game_state.side_menu_visible = true;
     globals.game_state.debug_on = false;
     globals.game_state.tower0_en = true;
     globals.game_state.tower0_place = false;
@@ -50,10 +50,13 @@ void init_globals(void)
     globals.game_state.screen_h = al_get_display_height(display);
     globals.game_state.side_menu_w = 200;
     globals.game_state.top_bar_h = 32;
+    globals.game_state.bottom_bar_h = 32;
+    globals.game_state.map_screen_w = globals.game_state.screen_w - globals.game_state.side_menu_w;
+    globals.game_state.map_screen_h = globals.game_state.screen_h - globals.game_state.top_bar_h - globals.game_state.bottom_bar_h;
     globals.game_state.credits = 100;
     globals.game_state.energy_produced = 0;
     globals.game_state.energy_required = 0;
-    globals.game_state.count_down = 10 * GAME_UPADTES_PER_SEC;
+    globals.game_state.count_down = 10 * GAME_UPDATES_PER_SEC;
     //object pointers
     globals.enemy = NULL;
     globals.enemy_num = 0;
@@ -238,9 +241,9 @@ void keyboard_actions(void)
         globals.keys.key_g = false;
     }
 
-    //side build menu enable
+    //side menu enable
     if (globals.keys.key_b == true){
-        globals.game_state.build_menu_on = !globals.game_state.build_menu_on;
+        globals.game_state.side_menu_visible = !globals.game_state.side_menu_visible;
         globals.keys.key_b = false;
     }
 
@@ -286,11 +289,11 @@ void mouse_actions(void)
     }
 
     //menu actions
-    if (globals.game_state.build_menu_on == true){
+    if (globals.game_state.side_menu_visible == true){
         float x0,y0;
         int screen_w,top_bar;
         top_bar = globals.game_state.top_bar_h;
-        screen_w = al_get_display_width(display);
+        screen_w = globals.game_state.screen_w;
         x0 = screen_w-globals.game_state.side_menu_w;
         y0 = 0;
 
@@ -551,7 +554,7 @@ void mouse_clear_diff(void)
     globals.mouse.dz = 0;
 }
 
-void bound_screen(void)
+void bound_screen_inside_virtual_map(void)
 {
     float tile_size = TILE_DEFSIZE;
     int tile_w = globals.tiles.tile_w;
@@ -582,7 +585,7 @@ void update_enemy(void)
         globals.enemy = append_ll_item(globals.enemy,temp);
         globals.enemy_num++;
         globals.enemy_spawn = false;
-        globals.game_state.count_down = 10 * GAME_UPADTES_PER_SEC;
+        globals.game_state.count_down = 10 * GAME_UPDATES_PER_SEC;
     }
     //change position
     struct llist_t *cursor = globals.enemy;
@@ -776,7 +779,7 @@ void update_logic(void)
     update_timers();
     mouse_to_grid();
     get_cursor_info();
-    bound_screen();
+    bound_screen_inside_virtual_map();
 
     mouse_clear_diff();
 

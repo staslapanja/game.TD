@@ -11,7 +11,7 @@
 #include <math.h>
 #include <stdlib.h>
 
-#define GAME_UPADTES_PER_SEC 60
+#define GAME_UPDATES_PER_SEC 60
 
 #define TILE_DEFSIZE    64
 
@@ -82,7 +82,7 @@ struct xy_t {
 struct game_state_t{
     bool end_game;
     bool grid_en;
-    bool build_menu_on;
+    bool side_menu_visible;
     bool debug_on;
     bool tower0_en;
     bool tower0_place;
@@ -98,8 +98,11 @@ struct game_state_t{
     float screen_step;
     int screen_w;
     int screen_h;
+    int map_screen_w;
+    int map_screen_h;
     int side_menu_w;
     int top_bar_h;
+    int bottom_bar_h;
     float credits;
     float energy_produced;
     float energy_required;

@@ -21,7 +21,7 @@ bool place_check(void);
 void place_object_on_map(void);
 void set_zoom_tile_size(void);
 void mouse_clear_diff(void);
-void bound_screen(void);
+void bound_screen_inside_virtual_map(void);
 void update_enemy(void);
 void update_enemy_path(struct enemy_t *a);
 bool check_enemy_finish(struct enemy_t *a);

@@ -26,12 +26,12 @@ void init(void)
     if (!al_install_mouse())
         abort_game("Failed to install mouse");
 
-    timer = al_create_timer(1.0 / GAME_UPADTES_PER_SEC);
+    timer = al_create_timer(1.0 / GAME_UPDATES_PER_SEC);
     if (!timer)
         abort_game("Failed to create timer");
 
     al_set_new_display_flags(ALLEGRO_WINDOWED);
-    display = al_create_display(800, 600);
+    display = al_create_display(1024, 768);
     if (!display)
         abort_game("Failed to create display");
 
