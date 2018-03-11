@@ -56,7 +56,7 @@
 #define UI_BUILD_BAD   1
 #define UI_TWR_RANGE   2
 
-#define FONTS_NUM   1
+#define FONTS_NUM   2
 
 #define LLIST_ENEMY 0
 #define LLIST_TOWER 1
@@ -92,7 +92,6 @@ struct game_state_t{
     bool house0_place;
     bool house1_en;
     bool house1_place;
-    int zoom;
     float zoom_mult;
     struct xy_t screen_center;
     float screen_step;

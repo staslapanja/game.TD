@@ -52,6 +52,7 @@ void init(void)
         abort_game("Failed to initialize allegro image");
 
     fonts[0] = al_load_ttf_font("fonts/orbitron-medium.otf",16,0 );
+    fonts[1] = al_load_ttf_font("fonts/orbitron-medium.otf",12,0 );
 
     al_register_event_source(event_queue, al_get_mouse_event_source());
     al_register_event_source(event_queue, al_get_keyboard_event_source());

@@ -427,12 +427,14 @@ void draw_side_menu(void)
         float offset = 0.5f; //define pixels in the centre of a pixel area
 
         float x0,y0,x1,y1;
-        int screen_w,screen_h,top_bar,bottom_bar_h;
+        int screen_w,screen_h,top_bar,bottom_bar_h,side_menu_w;
         screen_w = globals.game_state.screen_w;
         screen_h = globals.game_state.screen_h;
         top_bar = globals.game_state.top_bar_h;
+        side_menu_w = globals.game_state.side_menu_w;
         bottom_bar_h = globals.game_state.bottom_bar_h;
-        x0 = screen_w-globals.game_state.side_menu_w;
+
+        x0 = screen_w-side_menu_w;
         y0 = top_bar;
         x1 = screen_w;
         y1 = screen_h-bottom_bar_h;
@@ -477,10 +479,12 @@ void draw_bottom_bar(void)
     ALLEGRO_COLOR border_color1 = al_map_rgb(176,196,222); //light steel blue
 
     float x0,y0,x1,y1;
-    int screen_w,screen_h,bottom_bar_h;
+    int screen_w,screen_h,bottom_bar_h,side_menu_w;
     screen_w = globals.game_state.screen_w;
     screen_h = globals.game_state.screen_h;
+    side_menu_w = globals.game_state.side_menu_w;
     bottom_bar_h = globals.game_state.bottom_bar_h;
+
     x0 = 0;
     y0 = screen_h-bottom_bar_h;
     x1 = screen_w;
@@ -493,6 +497,25 @@ void draw_bottom_bar(void)
     //text
     ALLEGRO_COLOR text_color0 = al_map_rgb(176,196,222); //light steel blue
     al_draw_textf(fonts[0] , text_color0, x0 + 10, y0 + 10, ALLEGRO_ALIGN_LEFT, "Bottom bar");
+
+    //draw zoom bar
+    al_draw_line(screen_w-side_menu_w+10, screen_h-bottom_bar_h+11, screen_w-side_menu_w+10, screen_h-bottom_bar_h+21, border_color1, 3);
+    al_draw_line(screen_w-side_menu_w/2, screen_h-bottom_bar_h+11, screen_w-side_menu_w/2, screen_h-bottom_bar_h+21, border_color1, 3);
+    al_draw_line(screen_w-10, screen_h-bottom_bar_h+11, screen_w-10, screen_h-bottom_bar_h+21, border_color1, 3);
+    al_draw_textf(fonts[1] , text_color0, screen_w-side_menu_w+15, screen_h-bottom_bar_h+12, ALLEGRO_ALIGN_LEFT, "x0.5");
+    al_draw_textf(fonts[1] , text_color0, screen_w-48, screen_h-bottom_bar_h+12, ALLEGRO_ALIGN_LEFT, "x2.0");
+    float zoom,zoom_cursor;
+    zoom = globals.game_state.zoom_mult;
+
+    if (zoom > 1.0) {
+        zoom_cursor = screen_w-side_menu_w+10 + ((side_menu_w - 20)/2) + ((side_menu_w - 20)/2) * (zoom - 1.0)/(MAX_ZOOM - 1.0);
+    } else if (zoom < 1.0) {
+        zoom_cursor = screen_w-side_menu_w+10 + ((side_menu_w - 20)/2) - ((side_menu_w - 20)/2) * (1.0 - zoom)/(1.0 - MIN_ZOOM);
+    } else {
+        zoom_cursor = screen_w-side_menu_w+10 + ((side_menu_w - 20)/2);
+    }
+
+    al_draw_line(zoom_cursor, screen_h-bottom_bar_h+11, zoom_cursor, screen_h-bottom_bar_h+21, al_map_rgb(100,0,0), 3);
 }
 
 void draw_enemy(void)

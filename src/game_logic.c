@@ -41,7 +41,6 @@ void init_globals(void)
     globals.game_state.house0_place = false;
     globals.game_state.house1_en = false;
     globals.game_state.house1_place = false;
-    globals.game_state.zoom = 1;
     globals.game_state.zoom_mult = 1.0f;
     globals.game_state.screen_center.x = 0;
     globals.game_state.screen_center.y = 0;
@@ -268,13 +267,23 @@ void mouse_actions(void)
         if (globals.game_state.zoom_mult >= MAX_ZOOM){
             globals.game_state.zoom_mult = MAX_ZOOM;
         } else {
-            globals.game_state.zoom_mult += 0.1;
+            //use offset condition because of using floats
+            if (globals.game_state.zoom_mult >= 0.95) {
+                globals.game_state.zoom_mult += 0.2;
+            } else {
+                globals.game_state.zoom_mult += 0.1;
+            }
         }
     } else if (globals.mouse.dz < 0){
         if (globals.game_state.zoom_mult <= MIN_ZOOM){
             globals.game_state.zoom_mult = MIN_ZOOM;
         } else {
-            globals.game_state.zoom_mult -= 0.1;
+            //use offset condition because of using floats
+            if (globals.game_state.zoom_mult <= 1.05) {
+                globals.game_state.zoom_mult -= 0.1;
+            } else {
+                globals.game_state.zoom_mult -= 0.2;
+            }
         }
     }
 
