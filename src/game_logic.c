@@ -116,6 +116,18 @@ void move_camera(float x, float y)
     globals.game_state.camera_pos.y = y;
 }
 
+void zoom_to_camera_pos(float x, float y)
+{
+    //zoom while keeping x,y at the same spot
+    float t_x, t_y;
+    float mult = globals.game_state.zoom_mult;
+
+    t_x = globals.game_state.camera_pos.x + x - x * mult;
+    t_y = globals.game_state.camera_pos.y + y - y * mult;
+
+    move_camera(t_x,t_y);
+}
+
 void create_river(void)
 {
     int h,w;
@@ -223,6 +235,8 @@ void keyboard_actions(void)
     if (globals.keys.key_z == true){
         globals.game_state.zoom_mult = 1.0;
         globals.keys.key_z = false;
+        zoom_to_camera_pos(globals.game_state.camera_pos.x + globals.game_state.screen_w/2,
+                           globals.game_state.camera_pos.y + globals.game_state.screen_h/2);
     }
 
     float mult = globals.game_state.zoom_mult;
@@ -277,6 +291,7 @@ void mouse_actions(void)
                 globals.game_state.zoom_mult += 0.1;
             }
         }
+        zoom_to_camera_pos(globals.mouse.grid_x,globals.mouse.grid_y);
     } else if (globals.mouse.dz < 0){
         if (globals.game_state.zoom_mult <= MIN_ZOOM){
             globals.game_state.zoom_mult = MIN_ZOOM;
@@ -288,6 +303,7 @@ void mouse_actions(void)
                 globals.game_state.zoom_mult -= 0.2;
             }
         }
+        zoom_to_camera_pos(globals.mouse.grid_x,globals.mouse.grid_y);
     }
 
     float mult = globals.game_state.zoom_mult;
