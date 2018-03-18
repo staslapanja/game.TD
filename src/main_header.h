@@ -94,14 +94,15 @@ struct game_state_t{
     bool house1_place;
     float zoom_mult;
     struct xy_t screen_center;
+    struct xy_t camera_pos;
     float screen_step;
     int screen_w;
     int screen_h;
-    int map_screen_w;
-    int map_screen_h;
     int side_menu_w;
     int top_bar_h;
     int bottom_bar_h;
+    int map_screen_w;
+    int map_screen_h;
     float credits;
     float energy_produced;
     float energy_required;

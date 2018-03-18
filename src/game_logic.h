@@ -6,7 +6,7 @@
 void init_globals(void);
 void init_tiles(int w, int h);
 void init_structures(void);
-void move_screen(struct xy_t pos);
+void move_camera(float x, float y);
 void create_river(void);
 void create_rail(void);
 void create_tower_list(void);

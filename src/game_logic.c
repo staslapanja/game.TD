@@ -44,6 +44,8 @@ void init_globals(void)
     globals.game_state.zoom_mult = 1.0f;
     globals.game_state.screen_center.x = 0;
     globals.game_state.screen_center.y = 0;
+    globals.game_state.camera_pos.x = 0;
+    globals.game_state.camera_pos.y = 0;
     globals.game_state.screen_step = 8;
     globals.game_state.screen_w = al_get_display_width(display);
     globals.game_state.screen_h = al_get_display_height(display);
@@ -108,9 +110,10 @@ void init_structures(void)
     }
 }
 
-void move_screen(struct xy_t pos)
+void move_camera(float x, float y)
 {
-    globals.game_state.screen_center = pos;
+    globals.game_state.camera_pos.x = x;
+    globals.game_state.camera_pos.y = y;
 }
 
 void create_river(void)
@@ -224,15 +227,15 @@ void keyboard_actions(void)
 
     float mult = globals.game_state.zoom_mult;
 
-    //screen move with keys
+    //camera move with keys
     if (globals.keys.key_right == true)
-        globals.game_state.screen_center.x += globals.game_state.screen_step / mult;
+        globals.game_state.camera_pos.x += globals.game_state.screen_step / mult;
     if (globals.keys.key_left == true)
-        globals.game_state.screen_center.x -= globals.game_state.screen_step / mult;
+        globals.game_state.camera_pos.x -= globals.game_state.screen_step / mult;
     if (globals.keys.key_down == true)
-        globals.game_state.screen_center.y += globals.game_state.screen_step / mult;
+        globals.game_state.camera_pos.y += globals.game_state.screen_step / mult;
     if (globals.keys.key_up == true)
-        globals.game_state.screen_center.y -= globals.game_state.screen_step / mult;
+        globals.game_state.camera_pos.y -= globals.game_state.screen_step / mult;
 
     //grid enable
     if (globals.keys.key_g == true){
@@ -289,12 +292,12 @@ void mouse_actions(void)
 
     float mult = globals.game_state.zoom_mult;
 
-    //screen move with mouse if RB held
+    //camera move with mouse if RB held
     if (globals.mouse.rb == true){
         //horizontal movement
-        globals.game_state.screen_center.x -= globals.mouse.dx / mult;
+        globals.game_state.camera_pos.x -= globals.mouse.dx / mult;
         //vertical movement
-        globals.game_state.screen_center.y -= globals.mouse.dy / mult;
+        globals.game_state.camera_pos.y -= globals.mouse.dy / mult;
     }
 
     //menu actions
@@ -391,8 +394,8 @@ void mouse_to_grid(void)
         mouse_y = globals.mouse.y;
     }
     //get mouse position on map
-    x = globals.game_state.screen_center.x - (globals.game_state.screen_w/(2*mult)) + (mouse_x / mult);
-    y = globals.game_state.screen_center.y - (globals.game_state.screen_h/(2*mult)) + (mouse_y / mult);
+    x = globals.game_state.camera_pos.x + (mouse_x / mult);
+    y = globals.game_state.camera_pos.y + (mouse_y / mult);
 
     //determine the position of the tile
     //that the mouse points to on the map
@@ -418,8 +421,8 @@ void mouse_to_grid(void)
 
     //convert map position back to screen position
     //round tile size to integer
-    globals.mouse.grid_x = (x * (int)(tile_size * mult)) - (globals.game_state.screen_center.x * mult - globals.game_state.screen_w/2);
-    globals.mouse.grid_y = (y * (int)(tile_size * mult)) - (globals.game_state.screen_center.y * mult - globals.game_state.screen_h/2);
+    globals.mouse.grid_x = (x * (int)(tile_size * mult)) - globals.game_state.camera_pos.x;
+    globals.mouse.grid_y = (y * (int)(tile_size * mult)) - globals.game_state.camera_pos.y;
 }
 
 void get_cursor_info(void)
@@ -777,7 +780,7 @@ void init_logic(void)
 
     create_tower_list();
 
-    move_screen(globals.tiles.map_center);
+    move_camera(globals.tiles.map_center.x-globals.game_state.map_screen_w/2,globals.tiles.map_center.y-globals.game_state.screen_h/2);
 
 }
 
@@ -796,3 +799,4 @@ void update_logic(void)
     update_towers();
     update_float_text();
 }
+
