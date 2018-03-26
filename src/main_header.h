@@ -119,6 +119,7 @@ struct keys_t{
     bool key_b;
     bool key_e;
     bool key_d;
+    bool key_c;
 };
 
 struct mouse_t{

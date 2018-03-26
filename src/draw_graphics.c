@@ -623,6 +623,6 @@ void draw_debug(void)
         al_draw_textf(fonts[0] , text_color0, 30, 120, ALLEGRO_ALIGN_LEFT, "MOUSE: %d,%d",globals.mouse.x,globals.mouse.y);
         al_draw_textf(fonts[0] , text_color0, 30, 140, ALLEGRO_ALIGN_LEFT, "MOUSET: %d,%d",globals.mouse.tile_x,globals.mouse.tile_y);
         al_draw_textf(fonts[0] , text_color0, 30, 160, ALLEGRO_ALIGN_LEFT, "MOUSEG: %f,%f",globals.mouse.grid_x,globals.mouse.grid_y);
-        al_draw_textf(fonts[0] , text_color0, 30, 180, ALLEGRO_ALIGN_LEFT, "ScrCtr: %f,%f",globals.game_state.screen_center.x,globals.game_state.screen_center.y);
+        al_draw_textf(fonts[0] , text_color0, 30, 180, ALLEGRO_ALIGN_LEFT, "CamPos: %f,%f",globals.game_state.camera_pos.x,globals.game_state.camera_pos.y);
     }
 }

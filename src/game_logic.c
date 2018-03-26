@@ -12,6 +12,7 @@ void init_globals(void)
     globals.keys.key_g = false;
     globals.keys.key_b = false;
     globals.keys.key_d = false;
+    globals.keys.key_c = false;
     //init mouse
     globals.mouse.lb = false;
     globals.mouse.rb = false;
@@ -122,8 +123,8 @@ void zoom_to_camera_pos(float x, float y)
     float t_x, t_y;
     float mult = globals.game_state.zoom_mult;
 
-    t_x = globals.game_state.camera_pos.x + x - x * mult;
-    t_y = globals.game_state.camera_pos.y + y - y * mult;
+    t_x = globals.game_state.camera_pos.x + x - x / mult;
+    t_y = globals.game_state.camera_pos.y + y - y / mult;
 
     move_camera(t_x,t_y);
 }
@@ -251,6 +252,13 @@ void keyboard_actions(void)
     if (globals.keys.key_up == true)
         globals.game_state.camera_pos.y -= globals.game_state.screen_step / mult;
 
+    //Centre camera
+    if (globals.keys.key_c == true){
+        move_camera(globals.tiles.map_center.x-(globals.game_state.screen_w/2)/mult,
+                    globals.tiles.map_center.y-(globals.game_state.screen_h/2)/mult);
+        globals.keys.key_c = false;
+    }
+
     //grid enable
     if (globals.keys.key_g == true){
         globals.game_state.grid_en = !globals.game_state.grid_en;
@@ -281,28 +289,18 @@ void mouse_actions(void)
 
     //zoom control with mouse wheel
     if (globals.mouse.dz > 0){
+        globals.game_state.zoom_mult *= 1.1;
         if (globals.game_state.zoom_mult >= MAX_ZOOM){
             globals.game_state.zoom_mult = MAX_ZOOM;
-        } else {
-            //use offset condition because of using floats
-            if (globals.game_state.zoom_mult >= 0.95) {
-                globals.game_state.zoom_mult += 0.2;
-            } else {
-                globals.game_state.zoom_mult += 0.1;
-            }
         }
-        zoom_to_camera_pos(globals.mouse.grid_x,globals.mouse.grid_y);
+        mouse_to_grid();
+        zoom_to_camera_pos(globals.mouse.grid_x,globals.mouse.y);
     } else if (globals.mouse.dz < 0){
+        globals.game_state.zoom_mult /= 1.1;
         if (globals.game_state.zoom_mult <= MIN_ZOOM){
             globals.game_state.zoom_mult = MIN_ZOOM;
-        } else {
-            //use offset condition because of using floats
-            if (globals.game_state.zoom_mult <= 1.05) {
-                globals.game_state.zoom_mult -= 0.1;
-            } else {
-                globals.game_state.zoom_mult -= 0.2;
-            }
         }
+        mouse_to_grid();
         zoom_to_camera_pos(globals.mouse.grid_x,globals.mouse.grid_y);
     }
 
