@@ -18,6 +18,8 @@ void init_globals(void)
     globals.mouse.rb = false;
     globals.mouse.x = 0;
     globals.mouse.y = 0;
+    globals.mouse.map_x = 0;
+    globals.mouse.map_y = 0;
     globals.mouse.grid_x = 0;
     globals.mouse.grid_y = 0;
     globals.mouse.tile_x = 0;
@@ -43,6 +45,7 @@ void init_globals(void)
     globals.game_state.house1_en = false;
     globals.game_state.house1_place = false;
     globals.game_state.zoom_mult = 1.0f;
+    globals.game_state.zoom_mult_old = 1.0f;
     globals.game_state.screen_center.x = 0;
     globals.game_state.screen_center.y = 0;
     globals.game_state.camera_pos.x = 0;
@@ -119,12 +122,13 @@ void move_camera(float x, float y)
 
 void zoom_to_camera_pos(float x, float y)
 {
-    //zoom while keeping x,y at the same spot
+    //zoom while keeping x,y at the same position
     float t_x, t_y;
     float mult = globals.game_state.zoom_mult;
+    float mult_old = globals.game_state.zoom_mult_old;
 
-    t_x = globals.game_state.camera_pos.x + x - x / mult;
-    t_y = globals.game_state.camera_pos.y + y - y / mult;
+    t_x = globals.game_state.camera_pos.x + (x * (1/mult_old - 1/mult));
+    t_y = globals.game_state.camera_pos.y + (y * (1/mult_old - 1/mult));
 
     move_camera(t_x,t_y);
 }
@@ -234,10 +238,11 @@ void keyboard_actions(void)
 {
     //zoom control
     if (globals.keys.key_z == true){
+        globals.game_state.zoom_mult_old = globals.game_state.zoom_mult;
         globals.game_state.zoom_mult = 1.0;
         globals.keys.key_z = false;
-        zoom_to_camera_pos(globals.game_state.camera_pos.x + globals.game_state.screen_w/2,
-                           globals.game_state.camera_pos.y + globals.game_state.screen_h/2);
+        zoom_to_camera_pos(globals.game_state.screen_w/2,
+                           globals.game_state.screen_h/2);
     }
 
     float mult = globals.game_state.zoom_mult;
@@ -289,19 +294,19 @@ void mouse_actions(void)
 
     //zoom control with mouse wheel
     if (globals.mouse.dz > 0){
+        globals.game_state.zoom_mult_old = globals.game_state.zoom_mult;
         globals.game_state.zoom_mult *= 1.1;
         if (globals.game_state.zoom_mult >= MAX_ZOOM){
             globals.game_state.zoom_mult = MAX_ZOOM;
         }
-        mouse_to_grid();
-        zoom_to_camera_pos(globals.mouse.grid_x,globals.mouse.y);
+        zoom_to_camera_pos(globals.mouse.x,globals.mouse.y);
     } else if (globals.mouse.dz < 0){
+        globals.game_state.zoom_mult_old = globals.game_state.zoom_mult;
         globals.game_state.zoom_mult /= 1.1;
         if (globals.game_state.zoom_mult <= MIN_ZOOM){
             globals.game_state.zoom_mult = MIN_ZOOM;
         }
-        mouse_to_grid();
-        zoom_to_camera_pos(globals.mouse.grid_x,globals.mouse.grid_y);
+        zoom_to_camera_pos(globals.mouse.x,globals.mouse.y);
     }
 
     float mult = globals.game_state.zoom_mult;
@@ -411,6 +416,9 @@ void mouse_to_grid(void)
     x = globals.game_state.camera_pos.x + (mouse_x / mult);
     y = globals.game_state.camera_pos.y + (mouse_y / mult);
 
+    globals.mouse.map_x = x;
+    globals.mouse.map_y = y;
+
     //determine the position of the tile
     //that the mouse points to on the map
     if (x < 0){
@@ -435,8 +443,8 @@ void mouse_to_grid(void)
 
     //convert map position back to screen position
     //round tile size to integer
-    globals.mouse.grid_x = (x * (int)(tile_size * mult)) - globals.game_state.camera_pos.x;
-    globals.mouse.grid_y = (y * (int)(tile_size * mult)) - globals.game_state.camera_pos.y;
+    globals.mouse.grid_x = (x * (int)(tile_size * mult)) - globals.game_state.camera_pos.x * mult;
+    globals.mouse.grid_y = (y * (int)(tile_size * mult)) - globals.game_state.camera_pos.y * mult;
 }
 
 void get_cursor_info(void)
@@ -585,19 +593,21 @@ void bound_screen_inside_virtual_map(void)
     float tile_size = TILE_DEFSIZE;
     int tile_w = globals.tiles.tile_w;
     int tile_h = globals.tiles.tile_h;
+    int screen_w = globals.game_state.screen_w;
+    int screen_h = globals.game_state.screen_h;
 
     //correct if screen is out of bounds
-    if (globals.game_state.screen_center.x < 0){
-        globals.game_state.screen_center.x = 0;
+    if (globals.game_state.camera_pos.x < -screen_w){
+        globals.game_state.camera_pos.x = -screen_w;
     }
-    if (globals.game_state.screen_center.x > (tile_w * tile_size)){
-        globals.game_state.screen_center.x = tile_w * tile_size;
+    if (globals.game_state.camera_pos.x > (tile_w * tile_size)-screen_w){
+        globals.game_state.camera_pos.x = (tile_w * tile_size)-screen_w;
     }
-    if (globals.game_state.screen_center.y < 0){
-        globals.game_state.screen_center.y = 0;
+    if (globals.game_state.camera_pos.y < -screen_h){
+        globals.game_state.camera_pos.y = -screen_h;
     }
-    if (globals.game_state.screen_center.y > (tile_h * tile_size)){
-        globals.game_state.screen_center.y = tile_h * tile_size;
+    if (globals.game_state.camera_pos.y > (tile_h * tile_size)-screen_h){
+        globals.game_state.camera_pos.y = (tile_h * tile_size)-screen_h;
     }
 }
 

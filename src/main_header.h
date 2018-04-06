@@ -93,6 +93,7 @@ struct game_state_t{
     bool house1_en;
     bool house1_place;
     float zoom_mult;
+    float zoom_mult_old;
     struct xy_t screen_center;
     struct xy_t camera_pos;
     float screen_step;
@@ -127,6 +128,8 @@ struct mouse_t{
     bool rb;
     int x;
     int y;
+    float map_x;
+    float map_y;
     float grid_x;
     float grid_y;
     int tile_x;
