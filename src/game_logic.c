@@ -295,16 +295,14 @@ void mouse_actions(void)
     //zoom control with mouse wheel
     if (globals.mouse.dz > 0){
         globals.game_state.zoom_mult_old = globals.game_state.zoom_mult;
-        globals.game_state.zoom_mult *= 1.1;
-        if (globals.game_state.zoom_mult >= MAX_ZOOM){
-            globals.game_state.zoom_mult = MAX_ZOOM;
+        if (globals.game_state.zoom_mult < MAX_ZOOM){
+            globals.game_state.zoom_mult *= 1.1;
         }
         zoom_to_camera_pos(globals.mouse.x,globals.mouse.y);
     } else if (globals.mouse.dz < 0){
         globals.game_state.zoom_mult_old = globals.game_state.zoom_mult;
-        globals.game_state.zoom_mult /= 1.1;
-        if (globals.game_state.zoom_mult <= MIN_ZOOM){
-            globals.game_state.zoom_mult = MIN_ZOOM;
+        if (globals.game_state.zoom_mult > MIN_ZOOM){
+            globals.game_state.zoom_mult /= 1.1;
         }
         zoom_to_camera_pos(globals.mouse.x,globals.mouse.y);
     }
@@ -595,19 +593,20 @@ void bound_screen_inside_virtual_map(void)
     int tile_h = globals.tiles.tile_h;
     int screen_w = globals.game_state.screen_w;
     int screen_h = globals.game_state.screen_h;
+    float mult = globals.game_state.zoom_mult;
 
     //correct if screen is out of bounds
-    if (globals.game_state.camera_pos.x < -screen_w){
-        globals.game_state.camera_pos.x = -screen_w;
+    if (globals.game_state.camera_pos.x < -(screen_w/2)/mult){
+        globals.game_state.camera_pos.x = -(screen_w/2)/mult;
     }
-    if (globals.game_state.camera_pos.x > (tile_w * tile_size)-screen_w){
-        globals.game_state.camera_pos.x = (tile_w * tile_size)-screen_w;
+    if (globals.game_state.camera_pos.x > (tile_w * tile_size)-(screen_w/2)/mult){
+        globals.game_state.camera_pos.x = (tile_w * tile_size)-(screen_w/2)/mult;
     }
-    if (globals.game_state.camera_pos.y < -screen_h){
-        globals.game_state.camera_pos.y = -screen_h;
+    if (globals.game_state.camera_pos.y < -(screen_h/2)/mult){
+        globals.game_state.camera_pos.y = -(screen_h/2)/mult;
     }
-    if (globals.game_state.camera_pos.y > (tile_h * tile_size)-screen_h){
-        globals.game_state.camera_pos.y = (tile_h * tile_size)-screen_h;
+    if (globals.game_state.camera_pos.y > (tile_h * tile_size)-(screen_h/2)/mult){
+        globals.game_state.camera_pos.y = (tile_h * tile_size)-(screen_h/2)/mult;
     }
 }
 

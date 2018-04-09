@@ -507,8 +507,12 @@ void draw_bottom_bar(void)
     float zoom,zoom_cursor;
     zoom = globals.game_state.zoom_mult;
 
-    if (zoom > 1.0) {
+    if (zoom >= MAX_ZOOM) {
+        zoom_cursor = screen_w-side_menu_w+10 + ((side_menu_w - 20)/2) + ((side_menu_w - 20)/2);
+    } else if (zoom > 1.0) {
         zoom_cursor = screen_w-side_menu_w+10 + ((side_menu_w - 20)/2) + ((side_menu_w - 20)/2) * (zoom - 1.0)/(MAX_ZOOM - 1.0);
+    } else if (zoom < MIN_ZOOM) {
+        zoom_cursor = screen_w-side_menu_w+10 + ((side_menu_w - 20)/2) - ((side_menu_w - 20)/2);
     } else if (zoom < 1.0) {
         zoom_cursor = screen_w-side_menu_w+10 + ((side_menu_w - 20)/2) - ((side_menu_w - 20)/2) * (1.0 - zoom)/(1.0 - MIN_ZOOM);
     } else {
@@ -615,6 +619,7 @@ void draw_floating_text(void)
 
 void draw_debug(void)
 {
+    float mult = globals.game_state.zoom_mult;
 
     if (globals.game_state.debug_on == true){
         ALLEGRO_COLOR text_color0 = al_map_rgb(0,0,250);
@@ -623,6 +628,8 @@ void draw_debug(void)
         al_draw_textf(fonts[0] , text_color0, 30, 120, ALLEGRO_ALIGN_LEFT, "MOUSE: %d,%d",globals.mouse.x,globals.mouse.y);
         al_draw_textf(fonts[0] , text_color0, 30, 140, ALLEGRO_ALIGN_LEFT, "MOUSET: %d,%d",globals.mouse.tile_x,globals.mouse.tile_y);
         al_draw_textf(fonts[0] , text_color0, 30, 160, ALLEGRO_ALIGN_LEFT, "MOUSEG: %f,%f",globals.mouse.grid_x,globals.mouse.grid_y);
-        al_draw_textf(fonts[0] , text_color0, 30, 180, ALLEGRO_ALIGN_LEFT, "CamPos: %f,%f",globals.game_state.camera_pos.x,globals.game_state.camera_pos.y);
+        al_draw_textf(fonts[0] , text_color0, 30, 180, ALLEGRO_ALIGN_LEFT, "MOUSEM: %f,%f",globals.mouse.map_x,globals.mouse.map_y);
+        al_draw_textf(fonts[0] , text_color0, 30, 200, ALLEGRO_ALIGN_LEFT, "CamPos: %f,%f",globals.game_state.camera_pos.x,globals.game_state.camera_pos.y);
+        al_draw_textf(fonts[0] , text_color0, 30, 220, ALLEGRO_ALIGN_LEFT, "DIFF: %f,%f",(globals.mouse.map_x-globals.game_state.camera_pos.x)*mult,(globals.mouse.map_y-globals.game_state.camera_pos.y)*mult);
     }
 }
