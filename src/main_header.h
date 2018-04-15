@@ -22,8 +22,7 @@
 #define TILE_HILL   2
 #define TILE_WATER  3
 #define TILE_GRASS  4
-#define TILE_RAIL_STRAIGHT  5
-#define TILE_RAIL_CORNER    6
+#define TILE_RAIL   5
 
 #define TILE_ID_HILL_0  0x2
 #define TILE_ID_HILL_1  0x4
@@ -43,12 +42,21 @@
 #define TILE_ID_HILL_15 0x10000
 #define TILE_ID_HILL_16 0x20000
 
-#define OBJ_NUM         4
+#define TILE_ID_RAIL_0  0x2
+#define TILE_ID_RAIL_1  0x4
+#define TILE_ID_RAIL_2  0x8
+#define TILE_ID_RAIL_3  0x10
+#define TILE_ID_RAIL_4  0x20
+#define TILE_ID_RAIL_5  0x40
+
+#define OBJ_NUM         6
 
 #define OBJ_ENEMY       0
 #define OBJ_TOWER       1
 #define OBJ_TOWER_GUN   2
 #define OBJ_BUILDING    3
+#define OBJ_TRAIN_L     4
+#define OBJ_TRAIN_C     5
 
 #define UI_NUM 3
 
@@ -121,6 +129,7 @@ struct keys_t{
     bool key_e;
     bool key_d;
     bool key_c;
+    bool key_t;
 };
 
 struct mouse_t{
@@ -168,6 +177,20 @@ struct enemy_t{
     int credits;
 };
 
+struct train_t{
+    bool visible;
+    struct xy_t position;
+    float angle;
+    int path_num;
+    bool locomotive;
+    float speed;
+    float max_health;
+    float health;
+    int credits;
+    struct train_t *prew_train;
+    struct train_t *next_train;
+};
+
 struct tower_t{
     struct xy_t position;
     float angle;
@@ -176,7 +199,8 @@ struct tower_t{
     int level;
     float range;
     int price;
-    struct enemy_t *target;
+    struct enemy_t *e_target;
+    struct train_t *t_target;
 };
 
 struct tower_list_t{
@@ -220,8 +244,12 @@ struct globals_t {
     struct game_state_t game_state;
     struct tiles_t tiles;
     struct llist_t *enemy;
+    struct llist_t *trains;
     int enemy_num;
     bool enemy_spawn;
+    int train_length;
+    int train_level;
+    bool train_spawn;
     struct llist_t *towers;
     struct tower_list_t *tower_list;
     struct building_t *buildings;

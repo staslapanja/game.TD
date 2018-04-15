@@ -136,6 +136,32 @@ void free_enemy_t (void *a)
     free(b);
 }
 
+//TRAINS
+struct train_t* create_train_unit(bool visible, int x, int y, int path_start, bool loco, float speed, float health, int credits)
+{
+    struct train_t *a = (struct train_t*)malloc(sizeof(struct train_t));
+    a->visible = visible;
+    a->position.x = x;
+    a->position.y = y;
+    a->angle = 0;
+    a->path_num = path_start;
+    a->locomotive = loco;
+    a->speed = speed;
+    a->max_health = health;
+    a->health = health;
+    a->credits = credits;
+    a->prew_train = NULL;
+    a->next_train = NULL;
+
+    return a;
+}
+
+void free_train_t (void *a)
+{
+    struct train_t *b = a;
+    free(b);
+}
+
 //TOWERS
 struct tower_t* create_tower(int x, int y, float angle, float damage, int level, float range, int price)
 {
@@ -148,7 +174,8 @@ struct tower_t* create_tower(int x, int y, float angle, float damage, int level,
     a->level = level;
     a->range = range;
     a->price = price;
-    a->target = NULL;
+    a->e_target = NULL;
+    a->t_target = NULL;
 
     return a;
 }

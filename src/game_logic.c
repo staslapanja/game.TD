@@ -13,6 +13,7 @@ void init_globals(void)
     globals.keys.key_b = false;
     globals.keys.key_d = false;
     globals.keys.key_c = false;
+    globals.keys.key_t = false;
     //init mouse
     globals.mouse.lb = false;
     globals.mouse.rb = false;
@@ -63,12 +64,16 @@ void init_globals(void)
     globals.game_state.energy_required = 0;
     globals.game_state.count_down = 10 * GAME_UPDATES_PER_SEC;
     //object pointers
-    globals.enemy = NULL;
+    globals.enemy = NULL;       //linked list
+    globals.trains = NULL;      //linked list
     globals.enemy_num = 0;
     globals.enemy_spawn = false;
+    globals.train_length = 1;
+    globals.train_level = 1;
+    globals.train_spawn = false;
     globals.towers = NULL;      //linked list
     globals.tower_list = NULL;
-    globals.buildings = NULL;   //linked list
+    globals.buildings = NULL;
     globals.structures = NULL;  //map list
     globals.river = NULL;
     globals.rail = NULL;
@@ -280,6 +285,12 @@ void keyboard_actions(void)
     if (globals.keys.key_e == true){
         globals.enemy_spawn = true;
         globals.keys.key_e = false;
+    }
+
+    //spawn train
+    if (globals.keys.key_t == true){
+        globals.train_spawn = true;
+        globals.keys.key_t = false;
     }
 
     //debug_screen
@@ -634,8 +645,8 @@ void update_enemy(void)
             struct tower_t *tower;
             while(t_cursor != NULL){
                 tower = t_cursor->ptr;
-                if (tower->target == enemy){
-                    tower->target = NULL;
+                if (tower->e_target == enemy){
+                    tower->e_target = NULL;
                 }
                 t_cursor = t_cursor->next;
             }
@@ -717,33 +728,159 @@ bool check_enemy_finish(struct enemy_t *a)
     return false;
 }
 
+void update_train(void)
+{
+    struct llist_t *cursor = globals.trains;
+    struct train_t *train;
+    int tile_w = globals.tiles.tile_w;
+    struct train_t *temp = NULL;
+    int start_rail = globals.rail_start.y * tile_w + globals.rail_start.x;
+    bool start_slot_empty = true;
+
+    //create new train
+    if ((globals.train_spawn == true) || (globals.game_state.count_down <= 0)){
+        //if any train part on start position, hold with spawn
+        while(cursor != NULL){
+            train = cursor->ptr;
+            if (train->path_num == start_rail){
+                start_slot_empty = false;
+                cursor = NULL; //stop searching
+            } else {
+                cursor = cursor->next;
+            }
+        }
+        //if start rail free, spawn new train composition
+        if (start_slot_empty){
+            temp = create_train_unit(1, globals.rail_start.x * TILE_DEFSIZE, globals.rail_start.y * TILE_DEFSIZE, globals.rail_start.y * tile_w + globals.rail_start.x, 1, 2, 100,10);
+            globals.trains = append_ll_item(globals.trains,temp);
+            globals.train_spawn = false;
+            globals.game_state.count_down = 10 * GAME_UPDATES_PER_SEC;
+        }
+    }
+    //change position
+    cursor = globals.trains;
+    while(cursor != NULL){
+        train = cursor->ptr;
+        //if train destroyed, remove it from all the target lists
+        if (train->health <= 0){
+            //remove from tower list
+            struct llist_t *t_cursor = globals.towers;
+            struct tower_t *tower;
+            while(t_cursor != NULL){
+                tower = t_cursor->ptr;
+                if (tower->t_target == train){
+                    tower->t_target = NULL;
+                }
+                t_cursor = t_cursor->next;
+            }
+            //add floating text for credits reward and update credits
+            char text_holder[20];
+            struct float_text_t *temp_ft;
+            sprintf(text_holder, "$%d",train->credits);
+            ALLEGRO_COLOR text_color = al_map_rgb(218,165,32); //golden rod
+            temp_ft = create_float_text(train->position.x, train->position.y, 1, 60, text_holder, text_color);
+            globals.float_text = append_ll_item(globals.float_text,temp_ft);
+            globals.game_state.credits += train->credits;
+            //remove train
+            struct llist_t *temp = cursor;
+            cursor = cursor->next;
+            globals.trains = remove_ll_item(globals.trains,temp,free_enemy_t);
+        //move the train
+        } else {
+            update_train_path(train);
+            if(check_train_finish(train)){
+                struct llist_t *temp = cursor;
+                cursor = cursor->next;
+                globals.trains = remove_ll_item(globals.trains,temp,free_enemy_t);
+            } else {
+                cursor = cursor->next;
+            }
+        }
+    }
+}
+
+void update_train_path(struct train_t *a)
+{
+    //straight rail sections are 64 pixels long and tilted are 47 pixels long (3 + 41 + 3)
+
+    int virtual_tile_size = TILE_DEFSIZE;
+    //always move towards the next path centre
+    struct xy_t ppos, ppos_next;
+    int tile_w = globals.tiles.tile_w;
+    int path_num = a->path_num;
+    float speed = a->speed;
+    float t_cx, t_cy;
+    float pos_cx, pos_cy;
+    ppos = globals.rail[path_num].pos;
+    //if in finish tile do not update the position
+    if ((globals.rail[path_num].pos_next.x != -1) && (globals.rail[path_num].pos_next.y != -1)){
+
+        //train centre position
+        t_cx = a->position.x + virtual_tile_size/2;
+        t_cy = a->position.y + virtual_tile_size/2;
+        //tile centre position
+        pos_cx = ppos.x * virtual_tile_size + virtual_tile_size/2;
+        pos_cy = ppos.y * virtual_tile_size + virtual_tile_size/2;
+        ppos_next = globals.rail[path_num].pos_next;
+        //if more than one tile from the current centre switch to next centre
+        if ( ((abs(t_cx - pos_cx) >= virtual_tile_size)) || ((abs(t_cy - pos_cy) >= virtual_tile_size)) ){
+            a->path_num = ppos_next.y * tile_w + ppos_next.x;
+        }
+        //move in x direction if next tile in x direction
+        if ((ppos_next.x - ppos.x) > 0){
+            a->position.x += speed;
+        } else if ((ppos_next.x - ppos.x) < 0){
+            a->position.x -= speed;
+        }
+        //move in y direction if next tile in y direction
+        if ((ppos_next.y - ppos.y) > 0){
+            a->position.y += speed;
+        } else if ((ppos_next.y - ppos.y) < 0){
+            a->position.y -= speed;
+        }
+    }
+}
+
+bool check_train_finish(struct train_t *a)
+{
+    int path_num = a->path_num;
+
+    //check if finish tile
+    if ((globals.rail[path_num].pos_next.x == -1) || (globals.rail[path_num].pos_next.y == -1)){
+        return true;
+    }
+
+    return false;
+}
+
 void update_towers(void)
 {
     //seek nearest enemy in range
     struct llist_t *t_cursor = globals.towers;
     struct tower_t *tower;
-    struct llist_t *e_cursor;
+    struct llist_t *tr_cursor;
     struct enemy_t *enemy;
-    float t_x,t_y,e_x,e_y,dx,dy;
+    struct train_t *train;
+    float t_x,t_y,tr_x,tr_y,dx,dy;
 
     while(t_cursor != NULL){
         tower = t_cursor->ptr;
         t_x = tower->position.x;
         t_y = tower->position.y;
         //if no target, clear fire active
-        if (tower->target == NULL){
+        if ((tower->e_target == NULL) ||(tower->t_target == NULL)){
             tower->fire_active = false;
         }
         //check all enemies
-        e_cursor = globals.enemy;
-        while(e_cursor != NULL){
-            enemy = e_cursor->ptr;
-            e_x = enemy->position.x;
-            e_y = enemy->position.y;
-            dx = e_x-t_x;
-            dy = e_y-t_y;
+        tr_cursor = globals.enemy;
+        while(tr_cursor != NULL){
+            enemy = tr_cursor->ptr;
+            tr_x = enemy->position.x;
+            tr_y = enemy->position.y;
+            dx = tr_x-t_x;
+            dy = tr_y-t_y;
             if ((sqrt(dx*dx + dy*dy)) <= tower->range){
-                tower->target = enemy;
+                tower->e_target = enemy;
                 tower->fire_active = true;
                 //calculate as if 0 is north
                 if (dy == 0){
@@ -758,11 +895,42 @@ void update_towers(void)
 
                 }
                 enemy->health -= tower->damage;
-                e_cursor = NULL;
+                tr_cursor = NULL;
             } else {
                 tower->fire_active = false;
-                tower->target = NULL;
-                e_cursor = e_cursor->next;
+                tower->e_target = NULL;
+                tr_cursor = tr_cursor->next;
+            }
+        }
+        //check all trains
+        tr_cursor = globals.trains;
+        while(tr_cursor != NULL){
+            train = tr_cursor->ptr;
+            tr_x = train->position.x;
+            tr_y = train->position.y;
+            dx = tr_x-t_x;
+            dy = tr_y-t_y;
+            if ((sqrt(dx*dx + dy*dy)) <= tower->range){
+                tower->t_target = train;
+                tower->fire_active = true;
+                //calculate as if 0 is north
+                if (dy == 0){
+                    tower->angle = (dx/abs(dx)) * ALLEGRO_PI/2;
+                } else {
+                    if (dy < 0){
+                        tower->angle = atan(dx/abs(dy));
+                    } else {
+                        //if dx < 0 the rotation is PI + atan = - (PI - atan)
+                        tower->angle = ALLEGRO_PI - atan(dx/abs(dy));
+                    }
+
+                }
+                enemy->health -= tower->damage;
+                tr_cursor = NULL;
+            } else {
+                tower->fire_active = false;
+                tower->t_target = NULL;
+                tr_cursor = tr_cursor->next;
             }
         }
         t_cursor = t_cursor->next;
@@ -818,7 +986,8 @@ void update_logic(void)
 
     mouse_clear_diff();
 
-    update_enemy();
+//    update_enemy();
+    update_train();
     update_towers();
     update_float_text();
 }

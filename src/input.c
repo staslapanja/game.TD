@@ -36,6 +36,9 @@ void get_keyboard_input(void)
     if (event.keyboard.keycode == ALLEGRO_KEY_C) {
         globals.keys.key_c = true;
     }
+    if (event.keyboard.keycode == ALLEGRO_KEY_T) {
+        globals.keys.key_t = true;
+    }
 }
 
 void reset_keyboard_input(void)

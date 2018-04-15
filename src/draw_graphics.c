@@ -21,7 +21,7 @@ void create_tiles(void)
 
     //TILE_HILL  2
     globals.tiles.tile[TILE_HILL] = al_load_bitmap("resources/hill_atlas.png");
-    if (globals.tiles.tile[TILE_LAND] == NULL) //fallback graphic
+    if (globals.tiles.tile[TILE_HILL] == NULL)
     {
         abort_game("Resource hill_atlas.png not loaded!");
     }
@@ -34,27 +34,13 @@ void create_tiles(void)
     al_set_target_bitmap(globals.tiles.tile[TILE_GRASS]);
     al_clear_to_color(al_map_rgba(50, 205, 50, 255));
 
-    //TILE_RAIL_STRAIGHT  5
-    globals.tiles.tile[TILE_RAIL_STRAIGHT] = al_load_bitmap("resources/rail_straight.png");
-    if (globals.tiles.tile[TILE_RAIL_STRAIGHT] == NULL) //fallback graphic
+    //TILE_RAIL  5
+    globals.tiles.tile[TILE_RAIL] = al_load_bitmap("resources/rail_atlas.png");
+    if (globals.tiles.tile[TILE_RAIL] == NULL)
     {
-        globals.tiles.tile[TILE_RAIL_STRAIGHT] = al_create_bitmap(64, 64);
-        al_set_target_bitmap(globals.tiles.tile[TILE_RAIL_STRAIGHT]);
-        al_draw_filled_rectangle(16, 0, 48, 64, al_map_rgb(105,105,105));//dim gray / dim grey
-        al_draw_filled_rectangle(30, 0, 34, 64, al_map_rgb(75,0,130));//indigo
+        abort_game("Resource rail_atlas.png not loaded!");
     }
 
-    //TILE_RAIL_CORNER    6
-    globals.tiles.tile[TILE_RAIL_CORNER] = al_load_bitmap("resources/rail_corner.png");
-    if (globals.tiles.tile[TILE_RAIL_CORNER] == NULL) //fallback graphic
-    {
-        globals.tiles.tile[TILE_RAIL_CORNER] = al_create_bitmap(64, 64);
-        al_set_target_bitmap(globals.tiles.tile[TILE_RAIL_CORNER]);
-        al_draw_filled_rectangle(16, 0, 48, 48, al_map_rgb(105,105,105));//dim gray / dim grey
-        al_draw_filled_rectangle(48, 16,64, 48, al_map_rgb(105,105,105));//dim gray / dim grey
-        al_draw_filled_rectangle(30, 0, 34, 34, al_map_rgb(75,0,130));//indigo
-        al_draw_filled_rectangle(34,30, 64, 34, al_map_rgb(75,0,130));//indigo
-    }
 
     //reselect the display buffer
     al_set_target_backbuffer(display);
@@ -88,6 +74,20 @@ void create_game_objects(void)
         al_set_target_bitmap(globals.objects[OBJ_TOWER_GUN]);
         al_draw_filled_circle(32, 32, 16, al_map_rgba(176,196,222, 255));
         al_draw_line(32, 32, 32, 0, al_map_rgb(0, 0, 0), 4);
+    }
+
+    //OBJ_TRAIN_L
+    globals.objects[OBJ_TRAIN_L] = al_load_bitmap("resources/train_loco_atlas.png");
+    if (globals.objects[OBJ_TRAIN_L] == NULL)
+    {
+        abort_game("Resource train_loco_atlas.png not loaded!");
+    }
+
+    //OBJ_TRAIN_C
+    globals.objects[OBJ_TRAIN_C] = al_load_bitmap("resources/train_cart_atlas.png");
+    if (globals.objects[OBJ_TRAIN_C] == NULL)
+    {
+        abort_game("Resource train_cart_atlas.png not loaded!");
     }
 
     //reselect the display buffer
@@ -139,6 +139,7 @@ void update_graphics(void)
     draw_background();
     draw_map();
     draw_rail();
+    draw_train();
     draw_enemy();
     draw_towers();
     draw_floating_text();
@@ -285,7 +286,7 @@ void draw_rail(void)
         h = globals.rail[i].pos.y;
         x = - globals.game_state.camera_pos.x * mult + w * tile_size;
         y = - globals.game_state.camera_pos.y * mult + h * tile_size;
-        al_draw_scaled_rotated_bitmap(globals.tiles.tile[TILE_RAIL_STRAIGHT], 32, 32, x+(tile_size/2), y+(tile_size/2), mult, mult, -ALLEGRO_PI/2, 0x0);
+        al_draw_scaled_bitmap(globals.tiles.tile[TILE_RAIL], 0 * 64, 0 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
 
         w = globals.rail[i].pos_next.x;
         h = globals.rail[i].pos_next.y;
@@ -308,48 +309,48 @@ void draw_rail(void)
             dh1 = h_next - h;
             //straight section in x direction
             if ((dw0 != 0) && (dw1 != 0)){
-                al_draw_scaled_rotated_bitmap(globals.tiles.tile[TILE_RAIL_STRAIGHT], 32, 32, x+(tile_size/2), y+(tile_size/2), mult, mult, -ALLEGRO_PI/2, 0x0);
+                al_draw_scaled_bitmap(globals.tiles.tile[TILE_RAIL], 0 * 64, 0 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
             }
             //straight section in y direction
             if ((dh0 != 0) && (dh1 != 0)){
-                al_draw_scaled_rotated_bitmap(globals.tiles.tile[TILE_RAIL_STRAIGHT], 32, 32, x+(tile_size/2), y+(tile_size/2), mult, mult, 0, 0x0);
+                al_draw_scaled_bitmap(globals.tiles.tile[TILE_RAIL], 0 * 64, 1 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
             }
             //corner section
             //N-E
             if ((dw0 == 0) && (dw1 == 1) && (dh0 == 1) && (dh1 == 0)){
-                al_draw_scaled_rotated_bitmap(globals.tiles.tile[TILE_RAIL_CORNER], 32, 32, x+(tile_size/2), y+(tile_size/2), mult, mult, 0, 0x0);
+                al_draw_scaled_bitmap(globals.tiles.tile[TILE_RAIL], 1 * 64, 1 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
             }
             //N-W
             if ((dw0 == 0) && (dw1 == -1) && (dh0 == 1) && (dh1 == 0)){
-                al_draw_scaled_rotated_bitmap(globals.tiles.tile[TILE_RAIL_CORNER], 32, 32, x+(tile_size/2), y+(tile_size/2), mult, mult, -ALLEGRO_PI/2, 0x0);
+                al_draw_scaled_bitmap(globals.tiles.tile[TILE_RAIL], 2 * 64, 1 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
             }
             //S-E
             if ((dw0 == 0) && (dw1 == 1) && (dh0 == -1) && (dh1 == 0)){
-                al_draw_scaled_rotated_bitmap(globals.tiles.tile[TILE_RAIL_CORNER], 32, 32, x+(tile_size/2), y+(tile_size/2), mult, mult, ALLEGRO_PI/2, 0x0);
+                al_draw_scaled_bitmap(globals.tiles.tile[TILE_RAIL], 1 * 64, 0 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
             }
             //W-S
             if ((dw0 == 1) && (dw1 == 0) && (dh0 == 0) && (dh1 == 1)){
-                al_draw_scaled_rotated_bitmap(globals.tiles.tile[TILE_RAIL_CORNER], 32, 32, x+(tile_size/2), y+(tile_size/2), mult, mult, ALLEGRO_PI, 0x0);
+                al_draw_scaled_bitmap(globals.tiles.tile[TILE_RAIL], 2 * 64, 0 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
             }
             //E-N
             if ((dw0 == -1) && (dw1 == 0) && (dh0 == 0) && (dh1 == -1)){
-                al_draw_scaled_rotated_bitmap(globals.tiles.tile[TILE_RAIL_CORNER], 32, 32, x+(tile_size/2), y+(tile_size/2), mult, mult, 0, 0x0);
+                al_draw_scaled_bitmap(globals.tiles.tile[TILE_RAIL], 1 * 64, 1 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
             }
             //E-S
             if ((dw0 == -1) && (dw1 == 0) && (dh0 == 0) && (dh1 == -1)){
-                al_draw_scaled_rotated_bitmap(globals.tiles.tile[TILE_RAIL_CORNER], 32, 32, x+(tile_size/2), y+(tile_size/2), mult, mult, ALLEGRO_PI/2, 0x0);
+                al_draw_scaled_bitmap(globals.tiles.tile[TILE_RAIL], 1 * 64, 0 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
             }
             //S-W
             if ((dw0 == 0) && (dw1 == -1) && (dh0 == -1) && (dh1 == 0)){
-                al_draw_scaled_rotated_bitmap(globals.tiles.tile[TILE_RAIL_CORNER], 32, 32, x+(tile_size/2), y+(tile_size/2), mult, mult, ALLEGRO_PI, 0x0);
+                al_draw_scaled_bitmap(globals.tiles.tile[TILE_RAIL], 2 * 64, 0 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
             }
             //W-N
             if ((dw0 == 1) && (dw1 == 0) && (dh0 == 0) && (dh1 == -1)){
-                al_draw_scaled_rotated_bitmap(globals.tiles.tile[TILE_RAIL_CORNER], 32, 32, x+(tile_size/2), y+(tile_size/2), mult, mult, -ALLEGRO_PI/2, 0x0);
+                al_draw_scaled_bitmap(globals.tiles.tile[TILE_RAIL], 2 * 64, 1 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
             }
         } else {
             //draw last tile
-            al_draw_scaled_rotated_bitmap(globals.tiles.tile[TILE_RAIL_STRAIGHT], 32, 32, x+(tile_size/2), y+(tile_size/2), mult, mult, -ALLEGRO_PI/2, 0x0);
+            al_draw_scaled_bitmap(globals.tiles.tile[TILE_RAIL], 0 * 64, 0 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
         }
 
         //set next position variables
@@ -546,6 +547,31 @@ void draw_enemy(void)
     }
 }
 
+void draw_train(void)
+{
+    float x,y;
+    struct llist_t *cursor = globals.trains;
+    struct train_t *train;
+    float mult = globals.game_state.zoom_mult;
+    float tile_size = TILE_DEFSIZE * mult;
+
+    while(cursor != NULL){
+        //convert virtual position to resized position
+
+        train = cursor->ptr;
+
+        if (train->visible) {
+            x = - globals.game_state.camera_pos.x * mult + (train->position.x * mult);
+            y = - globals.game_state.camera_pos.y * mult + (train->position.y * mult);
+            //draw train
+            al_draw_scaled_bitmap(globals.objects[OBJ_TRAIN_L], 0 * 64, 0 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
+            //draw train health bar
+            draw_health_bar(x, y, tile_size, train->max_health, train->health);
+        }
+        cursor = cursor->next;
+    }
+}
+
 void draw_health_bar(float x, float y, int len, float max, float value)
 {
     //background base
@@ -567,7 +593,7 @@ void draw_health_bar(float x, float y, int len, float max, float value)
 
 void draw_towers(void)
 {
-    float t_x,t_y,e_x,e_y;
+    float t_x,t_y,tr_x,tr_y;
     struct llist_t *cursor = globals.towers;
     struct tower_t *tower;
     float mult = globals.game_state.zoom_mult;
@@ -583,12 +609,17 @@ void draw_towers(void)
         al_draw_scaled_bitmap(globals.objects[OBJ_TOWER], 0, 0, 64, 64, t_x , t_y , tile_size, tile_size, 0x0);
         //draw beam
         if (tower->fire_active == true){
-            e_x = - globals.game_state.camera_pos.x * mult + (tower->target->position.x * mult);
-            e_y = - globals.game_state.camera_pos.y * mult + (tower->target->position.y * mult);
-            al_draw_line(t_x+32*mult, t_y+32*mult, e_x+32*mult, e_y+32*mult, al_map_rgb(255, 0, 0), 3);
-            al_draw_line(t_x+32*mult, t_y+32*mult, e_x+32*mult, e_y+32*mult, al_map_rgb(255, 255, 255), 1);
-            al_draw_filled_circle(e_x+32*mult, e_y+32*mult, rand()%12, al_map_rgba(255, 0, 0, rand()%255));
-            al_draw_filled_circle(e_x+32*mult, e_y+32*mult, rand()%8, al_map_rgba(255,255,255, rand()%255));
+            if (tower->e_target != NULL) {
+                tr_x = - globals.game_state.camera_pos.x * mult + (tower->e_target->position.x * mult);
+                tr_y = - globals.game_state.camera_pos.y * mult + (tower->e_target->position.y * mult);
+            } else if (tower->t_target != NULL) {
+                tr_x = - globals.game_state.camera_pos.x * mult + (tower->t_target->position.x * mult);
+                tr_y = - globals.game_state.camera_pos.y * mult + (tower->t_target->position.y * mult);
+            }
+            al_draw_line(t_x+32*mult, t_y+32*mult, tr_x+32*mult, tr_y+32*mult, al_map_rgb(255, 0, 0), 3);
+            al_draw_line(t_x+32*mult, t_y+32*mult, tr_x+32*mult, tr_y+32*mult, al_map_rgb(255, 255, 255), 1);
+            al_draw_filled_circle(tr_x+32*mult, tr_y+32*mult, rand()%12, al_map_rgba(255, 0, 0, rand()%255));
+            al_draw_filled_circle(tr_x+32*mult, tr_y+32*mult, rand()%8, al_map_rgba(255,255,255, rand()%255));
         }
         //draw tower cannon
         al_draw_scaled_rotated_bitmap(globals.objects[OBJ_TOWER_GUN], 32, 32, t_x+32*mult, t_y+32*mult, mult, mult, tower->angle, 0x0);

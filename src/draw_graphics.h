@@ -18,6 +18,7 @@ void draw_top_bar(void);
 void draw_side_menu(void);
 void draw_bottom_bar(void);
 void draw_enemy(void);
+void draw_train(void);
 void draw_health_bar(float x, float y, int len, float max, float value);
 void draw_towers(void);
 void draw_floating_text(void);
