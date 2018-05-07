@@ -270,92 +270,51 @@ void draw_hill(float x, float y, int hill_type, int tile_size)
 void draw_rail(void)
 {
     int w,h,i;
-    int w_prev,h_prev,w_next,h_next;
-    int dw0, dw1, dh0, dh1;
     float x,y;
     int tile_w;
     float mult,tile_size;
+    int rail_id;
 
     tile_w = globals.tiles.tile_w;
     mult = globals.game_state.zoom_mult;
     //use integer precision for for better tile connections without empty spaces
     tile_size = (int)(TILE_DEFSIZE * mult);
 
-    i = globals.rail_start.y * tile_w + globals.rail_start.x;
-        w = globals.rail[i].pos.x;
-        h = globals.rail[i].pos.y;
-        x = - globals.game_state.camera_pos.x * mult + w * tile_size;
-        y = - globals.game_state.camera_pos.y * mult + h * tile_size;
-        al_draw_scaled_bitmap(globals.tiles.tile[TILE_RAIL], 0 * 64, 0 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
 
-        w = globals.rail[i].pos_next.x;
-        h = globals.rail[i].pos_next.y;
+    w = globals.rail_start.x;
+    h = globals.rail_start.y;
+
+    //Draw until reaching last position - invalid rail is marked with pos (-1,-1)
     while ((w != -1) && (h != -1)){
         i = h * tile_w + w;
-        w_prev = globals.rail[i].pos_prev.x;
-        h_prev = globals.rail[i].pos_prev.y;
-        w_next = globals.rail[i].pos_next.x;
-        h_next = globals.rail[i].pos_next.y;
+
+        rail_id = globals.rail[i].id;
 
         x = - globals.game_state.camera_pos.x * mult + w * tile_size;
         y = - globals.game_state.camera_pos.y * mult + h * tile_size;
 
-        //check if not last rail piece
-        //first was already set manually so it does not have to be checked
-        if ((w_next != -1) && (h_next != -1)){
-            dw0 = w - w_prev;
-            dw1 = w_next - w;
-            dh0 = h - h_prev;
-            dh1 = h_next - h;
-            //straight section in x direction
-            if ((dw0 != 0) && (dw1 != 0)){
-                al_draw_scaled_bitmap(globals.tiles.tile[TILE_RAIL], 0 * 64, 0 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
-            }
-            //straight section in y direction
-            if ((dh0 != 0) && (dh1 != 0)){
-                al_draw_scaled_bitmap(globals.tiles.tile[TILE_RAIL], 0 * 64, 1 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
-            }
-            //corner section
-            //N-E
-            if ((dw0 == 0) && (dw1 == 1) && (dh0 == 1) && (dh1 == 0)){
-                al_draw_scaled_bitmap(globals.tiles.tile[TILE_RAIL], 1 * 64, 1 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
-            }
-            //N-W
-            if ((dw0 == 0) && (dw1 == -1) && (dh0 == 1) && (dh1 == 0)){
-                al_draw_scaled_bitmap(globals.tiles.tile[TILE_RAIL], 2 * 64, 1 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
-            }
-            //S-E
-            if ((dw0 == 0) && (dw1 == 1) && (dh0 == -1) && (dh1 == 0)){
-                al_draw_scaled_bitmap(globals.tiles.tile[TILE_RAIL], 1 * 64, 0 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
-            }
-            //W-S
-            if ((dw0 == 1) && (dw1 == 0) && (dh0 == 0) && (dh1 == 1)){
-                al_draw_scaled_bitmap(globals.tiles.tile[TILE_RAIL], 2 * 64, 0 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
-            }
-            //E-N
-            if ((dw0 == -1) && (dw1 == 0) && (dh0 == 0) && (dh1 == -1)){
-                al_draw_scaled_bitmap(globals.tiles.tile[TILE_RAIL], 1 * 64, 1 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
-            }
-            //E-S
-            if ((dw0 == -1) && (dw1 == 0) && (dh0 == 0) && (dh1 == -1)){
-                al_draw_scaled_bitmap(globals.tiles.tile[TILE_RAIL], 1 * 64, 0 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
-            }
-            //S-W
-            if ((dw0 == 0) && (dw1 == -1) && (dh0 == -1) && (dh1 == 0)){
-                al_draw_scaled_bitmap(globals.tiles.tile[TILE_RAIL], 2 * 64, 0 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
-            }
-            //W-N
-            if ((dw0 == 1) && (dw1 == 0) && (dh0 == 0) && (dh1 == -1)){
-                al_draw_scaled_bitmap(globals.tiles.tile[TILE_RAIL], 2 * 64, 1 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
-            }
-        } else {
-            //draw last tile
+        if (rail_id & TILE_ID_RAIL_0){
             al_draw_scaled_bitmap(globals.tiles.tile[TILE_RAIL], 0 * 64, 0 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
+        }
+        if (rail_id & TILE_ID_RAIL_1){
+            al_draw_scaled_bitmap(globals.tiles.tile[TILE_RAIL], 0 * 64, 1 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
+        }
+        if (rail_id & TILE_ID_RAIL_2){
+            al_draw_scaled_bitmap(globals.tiles.tile[TILE_RAIL], 1 * 64, 0 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
+        }
+        if (rail_id & TILE_ID_RAIL_3){
+            al_draw_scaled_bitmap(globals.tiles.tile[TILE_RAIL], 1 * 64, 1 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
+        }
+        if (rail_id & TILE_ID_RAIL_4){
+            al_draw_scaled_bitmap(globals.tiles.tile[TILE_RAIL], 2 * 64, 0 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
+        }
+        if (rail_id & TILE_ID_RAIL_5){
+            al_draw_scaled_bitmap(globals.tiles.tile[TILE_RAIL], 2 * 64, 1 * 64, 64, 64, x , y , tile_size, tile_size, 0x0);
         }
 
         //set next position variables
-        w = w_next;
-        h = h_next;
+        w = globals.rail[i].pos_next.x;
+        h = globals.rail[i].pos_next.y;
     }
 
 }

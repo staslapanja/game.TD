@@ -10,6 +10,7 @@ void move_camera(float x, float y);
 void zoom_to_camera_pos(float x, float y);
 void create_river(void);
 void create_rail(void);
+void add_ids_to_rail(struct path_t *rail, struct xy_t rail_start, struct xy_t rail_finish);
 void create_tower_list(void);
 void keyboard_actions(void);
 void mouse_actions(void);

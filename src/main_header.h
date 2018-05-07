@@ -183,6 +183,7 @@ struct train_t{
     float angle;
     int path_num;
     bool locomotive;
+    int direction;
     float speed;
     float max_health;
     float health;
@@ -224,6 +225,7 @@ struct structures_t{
 
 struct path_t{
     bool is_set;
+    int id;
     struct xy_t pos;
     struct xy_t pos_prev;
     struct xy_t pos_next;

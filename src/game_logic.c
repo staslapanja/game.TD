@@ -170,6 +170,7 @@ void create_rail(void)
     //start of rail
     x = 0;
     y = 1;
+    //////////////
     globals.rail_start.x = x;
     globals.rail_start.y = y;
     i = y*tile_w+x;
@@ -226,6 +227,105 @@ void create_rail(void)
     globals.rail[i].pos_next.x = -1;
     globals.rail[i].pos_next.y = -1;
     globals.rail_finish = globals.rail[i].pos;
+
+    //ad rail IDs
+    add_ids_to_rail(globals.rail,globals.rail_start,globals.rail_finish);
+
+}
+
+void add_ids_to_rail(struct path_t *rail, struct xy_t rail_start, struct xy_t rail_finish)
+{
+    //Add rail IDs to different shapes of the rail for drawing
+    //and calculations
+    //Assume that rails start and finish on the left side of the map
+
+    int w,h,i;
+    int w_prev,h_prev,w_next,h_next;
+    int dw0, dw1, dh0, dh1;
+    int tile_w;
+
+    tile_w = globals.tiles.tile_w;
+
+    //First rail will be starting from the side of the screen
+    w = globals.rail_start.x;
+    h = globals.rail_start.y;
+
+    while ((w != -1) && (h != -1)){
+        i = h * tile_w + w;
+        //If start tile set virtual prev tile for correct tile selection
+        if (globals.rail[i].pos_prev.x == -1){
+            w_prev = w - 1; //Move one tile left
+        } else {
+            w_prev = globals.rail[i].pos_prev.x;
+        }
+        if (globals.rail[i].pos_prev.y == -1){
+            h_prev = h; //Stay in same row
+        } else {
+            h_prev = globals.rail[i].pos_prev.y;
+        }
+
+        //If finish tile set virtual next tile for correct tile selection
+        if (globals.rail[i].pos_next.x == -1){
+            w_next = w - 1; //Move one tile left
+        } else {
+            w_next = globals.rail[i].pos_next.x;
+        }
+        if (globals.rail[i].pos_next.y == -1){
+            h_next = h; //Stay in same row
+        } else {
+            h_next = globals.rail[i].pos_next.y;
+        }
+
+        dw0 = w - w_prev;
+        dw1 = w_next - w;
+        dh0 = h - h_prev;
+        dh1 = h_next - h;
+        //straight section in x direction
+        if ((dw0 != 0) && (dw1 != 0)){
+            globals.rail[i].id = TILE_ID_RAIL_0;
+        }
+        //straight section in y direction
+        if ((dh0 != 0) && (dh1 != 0)){
+            globals.rail[i].id = TILE_ID_RAIL_1;
+        }
+        //corner section
+        //N-E
+        if ((dw0 == 0) && (dw1 == 1) && (dh0 == 1) && (dh1 == 0)){
+            globals.rail[i].id = TILE_ID_RAIL_3;
+        }
+        //N-W
+        if ((dw0 == 0) && (dw1 == -1) && (dh0 == 1) && (dh1 == 0)){
+            globals.rail[i].id = TILE_ID_RAIL_5;
+        }
+        //S-E
+        if ((dw0 == 0) && (dw1 == 1) && (dh0 == -1) && (dh1 == 0)){
+            globals.rail[i].id = TILE_ID_RAIL_2;
+        }
+        //W-S
+        if ((dw0 == 1) && (dw1 == 0) && (dh0 == 0) && (dh1 == 1)){
+            globals.rail[i].id = TILE_ID_RAIL_4;
+        }
+        //E-N
+        if ((dw0 == -1) && (dw1 == 0) && (dh0 == 0) && (dh1 == -1)){
+            globals.rail[i].id = TILE_ID_RAIL_3;
+        }
+        //E-S
+        if ((dw0 == -1) && (dw1 == 0) && (dh0 == 0) && (dh1 == -1)){
+            globals.rail[i].id = TILE_ID_RAIL_2;
+        }
+        //S-W
+        if ((dw0 == 0) && (dw1 == -1) && (dh0 == -1) && (dh1 == 0)){
+            globals.rail[i].id = TILE_ID_RAIL_4;
+        }
+        //W-N
+        if ((dw0 == 1) && (dw1 == 0) && (dh0 == 0) && (dh1 == -1)){
+            globals.rail[i].id = TILE_ID_RAIL_5;
+        }
+
+        //set next position variables
+        w = w_next;
+        h = h_next;
+    }
 
 }
 
@@ -751,7 +851,7 @@ void update_train(void)
         }
         //if start rail free, spawn new train composition
         if (start_slot_empty){
-            temp = create_train_unit(1, globals.rail_start.x * TILE_DEFSIZE, globals.rail_start.y * TILE_DEFSIZE, globals.rail_start.y * tile_w + globals.rail_start.x, 1, 2, 100,10);
+            temp = create_train_unit(1, globals.rail_start.x * TILE_DEFSIZE, globals.rail_start.y * TILE_DEFSIZE, globals.rail_start.y * tile_w + globals.rail_start.x, 1, 0, 2, 100,10);
             globals.trains = append_ll_item(globals.trains,temp);
             globals.train_spawn = false;
             globals.game_state.count_down = 10 * GAME_UPDATES_PER_SEC;
@@ -801,42 +901,41 @@ void update_train(void)
 
 void update_train_path(struct train_t *a)
 {
-    //straight rail sections are 64 pixels long and tilted are 47 pixels long (3 + 41 + 3)
 
-    int virtual_tile_size = TILE_DEFSIZE;
-    //always move towards the next path centre
-    struct xy_t ppos, ppos_next;
-    int tile_w = globals.tiles.tile_w;
-    int path_num = a->path_num;
-    float speed = a->speed;
-    float t_cx, t_cy;
-    float pos_cx, pos_cy;
-    ppos = globals.rail[path_num].pos;
+    int virtual_tile_size;
+    int path_num;
+    float step;
+    float tile_end_distance;
+    float pos_x, pos_y;
+    float pos_next_x, pos_next_y;
+    bool rail_curve;
+
+    virtual_tile_size = TILE_DEFSIZE;
+
+    path_num = a->path_num;
+    pos_x = globals.rail[path_num].pos.x;
+    pos_y = globals.rail[path_num].pos.y;
+    pos_next_x = globals.rail[path_num].pos_next.x;
+    pos_next_y = globals.rail[path_num].pos_next.y;
+    step = a->speed;
+    globals.rail[path_num].
+
     //if in finish tile do not update the position
-    if ((globals.rail[path_num].pos_next.x != -1) && (globals.rail[path_num].pos_next.y != -1)){
+    if ((pos_next_x != -1) && (pos_next_y != -1)){
 
-        //train centre position
-        t_cx = a->position.x + virtual_tile_size/2;
-        t_cy = a->position.y + virtual_tile_size/2;
-        //tile centre position
-        pos_cx = ppos.x * virtual_tile_size + virtual_tile_size/2;
-        pos_cy = ppos.y * virtual_tile_size + virtual_tile_size/2;
-        ppos_next = globals.rail[path_num].pos_next;
-        //if more than one tile from the current centre switch to next centre
-        if ( ((abs(t_cx - pos_cx) >= virtual_tile_size)) || ((abs(t_cy - pos_cy) >= virtual_tile_size)) ){
-            a->path_num = ppos_next.y * tile_w + ppos_next.x;
+        //determine if straight or curved section
+        //straight rail sections are 64 pixels long and curved are 47 pixels long (3 + 41 + 3)
+        if (globals.rail[path_num].id & (TILE_ID_RAIL_0 | TILE_ID_RAIL_1)){
+            rail_curve = 0;
+        } else {
+            rail_curve = 1;
         }
-        //move in x direction if next tile in x direction
-        if ((ppos_next.x - ppos.x) > 0){
-            a->position.x += speed;
-        } else if ((ppos_next.x - ppos.x) < 0){
-            a->position.x -= speed;
-        }
-        //move in y direction if next tile in y direction
-        if ((ppos_next.y - ppos.y) > 0){
-            a->position.y += speed;
-        } else if ((ppos_next.y - ppos.y) < 0){
-            a->position.y -= speed;
+
+        while (step > 0){
+
+            //distance left to on current tile
+            tile_end_distance =
+
         }
     }
 }

@@ -137,7 +137,7 @@ void free_enemy_t (void *a)
 }
 
 //TRAINS
-struct train_t* create_train_unit(bool visible, int x, int y, int path_start, bool loco, float speed, float health, int credits)
+struct train_t* create_train_unit(bool visible, int x, int y, int path_start, bool loco, int direction, float speed, float health, int credits)
 {
     struct train_t *a = (struct train_t*)malloc(sizeof(struct train_t));
     a->visible = visible;
@@ -146,6 +146,7 @@ struct train_t* create_train_unit(bool visible, int x, int y, int path_start, bo
     a->angle = 0;
     a->path_num = path_start;
     a->locomotive = loco;
+    a->direction = direction;
     a->speed = speed;
     a->max_health = health;
     a->health = health;
